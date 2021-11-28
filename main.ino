@@ -12,8 +12,8 @@
 
 struct _PINS {
 
-    const byte R = 7;
-    const byte G = 6;
+    const byte R = 6;
+    const byte G = 7;
     const byte B = 5;
 
     const byte VSYNC = 9;
@@ -147,7 +147,9 @@ ISR(TIMER2_OVF_VECT) {
 
             aline -= 1;
             rlinecnt++;
+
         } else {
+
             asm volatile(
             ".rept 17 \n\t" //
             "    nop  \n\t" //
@@ -159,7 +161,7 @@ ISR(TIMER2_OVF_VECT) {
 
 // from VGAX
 void vga_clear(byte color) {
-
+    
     register byte c = color;
     c&=3;
 
@@ -189,7 +191,7 @@ void vga_delay(int milliseconds) {
 
 // from VGAX
 // values can be 0-3
-static inline void vga_draw_pixel(byte x, byte y, byte color) {
+void vga_draw_pixel(byte x, byte y, byte color) {
 
     byte *p = vga_framebuffer + y * VGA.WIDTH + (x >> 2);
     byte bitpos = 6 - (x & 3) * 2;
@@ -235,14 +237,7 @@ void setup() {
 
 void loop() {
 
-    for (int y = 0; y != VGA.HEIGHT; y++) {
-        
-        for (int x = 0; x != VGA.WIDTH; x++) {
-
-            if (x == (VGA.HEIGHT / 2) || y == (VGA.HEIGHT / 2)) vga_draw_pixel(x, y, VGA.TEXT_COLOR);
-            vga_draw_pixel(x, y, VGA.TEXT_COLOR);
-        }
-    }
+    vga_clear(VGA.CLEAR_COLOR);
 
     vga_delay(17);
 }
