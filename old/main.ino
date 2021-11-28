@@ -26,9 +26,9 @@ void loop() {
     // dont clear the screen - it takes too long
     // only refresh the parts that need clearing (first line)
     //VGA.clear(VGA_BGCOLOR);
-    VGA.fillrect(12, (VGAX_HEIGHT / 2) - 4 - 8, VGAX_WIDTH - 12, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
+    if (i % 2 == 0) VGA.fillrect(12, (VGAX_HEIGHT / 2) - 4 - 8, VGAX_WIDTH - 12, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
 
-    sprintf(TEST_STRING, "%d FRAMES", i);
+    sprintf(TEST_STRING, "FRAMES: %d", i);
 
     VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING, 12, (VGAX_HEIGHT / 2) - 4 - 8, VGA_FGCOLOR);
     VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_INFO, 12, (VGAX_HEIGHT / 2) - 4, VGA_FGCOLOR);
