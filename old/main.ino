@@ -36,6 +36,7 @@ byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
 static byte aline, rlinecnt, vskip, afreq, afreq0;
 unsigned long vtimer;
 
+// from VGAX
 ISR(TIMER1_OVF_vect) {
 
     aline -= 1;
@@ -44,43 +45,8 @@ ISR(TIMER1_OVF_vect) {
     rlinecnt = 0;
 }
 
+// from VGAX
 ISR(TIMER2_OVF_VECT) {
-
-    // this is taken from VGAX - I have little to no idea what it does and it was not written by me
-    // full credit to VGAX
-    asm volatile (                                   //4c to load Z and Y
-    "      ld r16, Z                        \n\t" //c1 r16=afreq
-    "      cpi %[freq0], 0                  \n\t" //c1 afreq0==0 ?
-    "      breq no_audio                    \n\t" //c1/2 *0
-    "play_audio:                            \n\t" 
-    "      cpi r16, 0                       \n\t" //c1 afreq==0 ?
-    "      brne dont_flip_audio_pin         \n\t" //c1/2 *1
-    "flip_audio_pin:                        \n\t" 
-    "      ldi r18, 1                       \n\t" //c1
-    "      out %[audiopin], r18             \n\t" //c1
-    "      st Z, %[freq0]                   \n\t" //c1 afreq=afreq0
-    "      rjmp end                         \n\t" //c2
-    //"    mov r16, %[freq0]\n\r"
-    //"    dec r16\n\r"
-    "no_audio:                              \n\t" 
-    "      nop                              \n\t" //c1
-    "      nop                              \n\t" //c1
-    "      nop                              \n\t" //c1
-    //"    nop                              \n\t" //c1
-    "      nop                              \n\t" //c1
-    "      nop                              \n\t" //c1
-    "      nop                              \n\t" //c1
-    "      rjmp end                         \n\t" //c2
-    "dont_flip_audio_pin:                   \n\t" 
-    "      dec r16                          \n\t" //c1
-    "      st Z, r16                        \n\t" //c1
-    //"    nop                              \n\t" //c1
-    "end:                                   \n\t"
-    :
-    : "z" (&afreq),
-        [freq0] "r" (afreq0),
-        [audiopin] "i" _SFR_IO_ADDR(PINC)
-    : "r16", "r18");
 
     // check for vertical sync porch boundary
     if (vskip) {
@@ -163,7 +129,7 @@ ISR(TIMER2_OVF_VECT) {
 void vga_clear(byte color) {
     
     register byte c = color;
-    c&=3;
+    c &= 3;
 
     register byte c0 = (c * 4) | c;
     c0 |= c0 * 16;
