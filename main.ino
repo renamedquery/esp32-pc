@@ -168,7 +168,7 @@ void vga_clear(byte color) {
     register byte c0 = (c * 4) | c;
     c0 |= c0 * 16;
 
-    memset(vga_framebuffer, c0, VGA.WIDTH * VGA.HEIGHT);
+    memset(vga_framebuffer, c0, VGA_WIDTH * VGA_HEIGHT);
 }
 
 // from VGAX
