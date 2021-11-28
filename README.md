@@ -1,4 +1,4 @@
-# distributed-esp32-computing
+# esp32-pc
 
 ### This repo is currently a work in progress.
 
