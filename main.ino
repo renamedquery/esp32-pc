@@ -16,9 +16,11 @@ struct _PINS {
 struct _VGA {
 
     const uint16_t WIDTH = 200;
-    const uint16_t HEIGHT = 100;
+    const uint16_t HEIGHT = 200;
 
     const uint16_t SKIPLINES = 20;
+
+    const byte CLEAR_COLOR = 11;
 };
 
 const _PINS PINS;
@@ -143,6 +145,12 @@ ISR(TIMER2_OVF_VECT) {
 
             aline -= 1;
             rlinecnt++;
+        } else {
+            asm volatile(
+            ".rept 17 \n\t" //
+            "    nop  \n\t" //
+            ".endr    \n\t" //
+            :::);
         }
     }
 }
@@ -182,19 +190,13 @@ void setup() {
     cli();
 
     // from VGAX
+    pinMode(PINS.VSYNC, OUTPUT);
     TIMSK0 = 0;
     TCCR0A = 0;
     TCCR0B = (1 << CS00); // enable 16MHz counter (used to fix the HSYNC interrupt jitter)
     OCR0A = 0;
     OCR0B = 0;
     TCNT0 = 0;
-
-    pinMode(PINS.R, OUTPUT);
-    pinMode(PINS.G, OUTPUT);
-    pinMode(PINS.B, OUTPUT);
-
-    pinMode(PINS.VSYNC, OUTPUT);
-    pinMode(PINS.HSYNC, OUTPUT);
 
     // from VGAX
     TCCR1A = bit(WGM11) | bit(COM1A1);
@@ -203,6 +205,7 @@ void setup() {
     OCR1A = 0; //64 / 64 uS=1 (less one)
     TIFR1 = bit(TOV1); //clear overflow flag
     TIMSK1 = bit(TOIE1); //interrupt on overflow on TIMER1
+    pinMode(PINS.HSYNC, OUTPUT);
     TCCR2A = bit(WGM20) | bit(WGM21) | bit(COM2B1); //pin3=COM2B1
     TCCR2B = bit(WGM22) | bit(CS21); //8 prescaler
     OCR2A = 63; //32 / 0.5 uS=64 (less one)
@@ -210,11 +213,17 @@ void setup() {
     TIFR2 = bit(TOV2); //clear overflow flag
     TIMSK2 = bit(TOIE2); //interrupt on overflow on TIMER2
 
+    pinMode(PINS.R, OUTPUT);
+    pinMode(PINS.G, OUTPUT);
+    pinMode(PINS.B, OUTPUT);
+
     sei();
+
+    vga_clear(VGA.CLEAR_COLOR);
 }
 
 void loop() {
 
-    vga_clear(00);
+    vga_clear(VGA.CLEAR_COLOR);
     vga_delay(17);
 }
