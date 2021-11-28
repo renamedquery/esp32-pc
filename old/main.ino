@@ -4,8 +4,8 @@
 
 VGAX VGA;
 
-const byte VGA_BGCOLOR = 0;
-const byte VGA_FGCOLOR = 1;
+const byte VGA_BGCOLOR = 11;
+const byte VGA_FGCOLOR = 00;
 
 #define FNT_NANOFONT_HEIGHT 6
 #define FNT_NANOFONT_SYMBOLS_COUNT 95
