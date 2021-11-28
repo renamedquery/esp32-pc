@@ -159,11 +159,22 @@ void vga_clear(byte color) {
     memset(vga_framebuffer, c0, VGA.WIDTH * VGA.HEIGHT);
 }
 
+// from VGAX
 void vga_copy(byte *src) {
 
     byte *o = (byte*)vga_framebuffer;
     unsigned cnt = VGA.WIDTH * VGA.HEIGHT;
     while (cnt--) *o++ = pgm_read_byte(src++);
+}
+
+// from VGAX
+void vga_delay(int milliseconds) {
+
+    while (milliseconds--) {
+
+        unsigned cnt = 16000 / 30;
+        while (cnt--) asm volatile("nop\nnop\nnop\nnop\n");
+    }
 }
 
 void setup() {
@@ -202,4 +213,8 @@ void setup() {
     sei();
 }
 
-void loop() {}
+void loop() {
+
+    vga_clear(00);
+    vga_delay(17);
+}
