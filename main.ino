@@ -23,15 +23,16 @@ struct _VGA {
 
     const uint16_t SKIPLINES = 20;
 
-    const byte CLEAR_COLOR = 11;
+    const byte CLEAR_COLOR = 33;
+    const byte TEXT_COLOR = 00;
 };
 
 const _PINS PINS;
 const _VGA VGA;
 
-volatile byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
-volatile byte aline, rlinecnt, vskip, afreq, afreq0;
-volatile unsigned long vtimer;
+byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
+byte aline, rlinecnt, vskip, afreq, afreq0;
+unsigned long vtimer;
 
 ISR(TIMER1_OVF_vect) {
 
@@ -188,6 +189,15 @@ void vga_delay(int milliseconds) {
     }
 }
 
+// from VGAX
+// values can be 0-3
+static inline void vga_draw_pixel(byte x, byte y, byte color) {
+
+    byte *p = vga_framebuffer + y * VGA.WIDTH + (x >> 2);
+    byte bitpos = 6 - (x & 3) * 2;
+    *p = (*p & ~(3 << bitpos)) | color << bitpos;
+}
+
 void setup() {
 
     cli();
@@ -227,6 +237,14 @@ void setup() {
 
 void loop() {
 
-    vga_clear(VGA.CLEAR_COLOR);
+    for (int y = 0; y != VGA.HEIGHT; y++) {
+        
+        for (int x = 0; x != VGA.WIDTH; x++) {
+
+            if (x == (VGA.HEIGHT / 2) || y == (VGA.HEIGHT / 2)) vga_draw_pixel(x, y, VGA.TEXT_COLOR);
+            vga_draw_pixel(x, y, VGA.TEXT_COLOR);
+        }
+    }
+
     vga_delay(17);
 }
