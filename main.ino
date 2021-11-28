@@ -5,6 +5,10 @@
 
 #define VGA_WIDTH 40
 #define VGA_HEIGHT 40
+#define DEJITTER_OFFSET 1
+#define DEJITTER_SYNC -2
+#define CLONED_LINES  6-1
+#define SKIPLINES 90
 
 struct _PINS {
 
@@ -21,8 +25,6 @@ struct _VGA {
     const uint16_t WIDTH = VGA_WIDTH;
     const uint16_t HEIGHT = VGA_HEIGHT;
 
-    const uint16_t SKIPLINES = 20;
-
     const byte CLEAR_COLOR = 33;
     const byte TEXT_COLOR = 00;
 };
@@ -31,13 +33,13 @@ const _PINS PINS;
 const _VGA VGA;
 
 byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
-byte aline, rlinecnt, vskip, afreq, afreq0;
+static byte aline, rlinecnt, vskip, afreq, afreq0;
 unsigned long vtimer;
 
 ISR(TIMER1_OVF_vect) {
 
     aline -= 1;
-    vskip = VGA.SKIPLINES;
+    vskip = SKIPLINES;
     vtimer++;
     rlinecnt = 0;
 }
@@ -90,10 +92,6 @@ ISR(TIMER2_OVF_VECT) {
     // interrupt jitter fix
     // code from https://github.com/cnlohr/avrcraft/tree/master/terminal and VGAX
     if (rlinecnt < VGA.HEIGHT) {
-
-        const byte DEJITTER_OFFSET = 1;
-        const byte DEJITTER_SYNC = -2;
-        const byte CLONED_LINES = 6 - 1;
 
         asm volatile (
         "     lds r16, %[timer0]    \n\t" //
