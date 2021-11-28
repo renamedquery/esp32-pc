@@ -3,8 +3,8 @@
 #include <Arduino.h>
 #include <stdlib.h>
 
-#define VGA_WIDTH 200
-#define VGA_HEIGHT 200
+#define VGA_WIDTH 40
+#define VGA_HEIGHT 40
 
 struct _PINS {
 
