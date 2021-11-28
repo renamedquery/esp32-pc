@@ -5,6 +5,7 @@
 
 #define VGA_WIDTH 40
 #define VGA_HEIGHT 40
+#define VGA_FRAMEBUFFER_SIZE (VGA_WIDTH * VGA_HEIGHT)
 #define DEJITTER_OFFSET 1
 #define DEJITTER_SYNC -2
 #define CLONED_LINES  6-1
@@ -25,21 +26,21 @@ struct _VGA {
     const uint16_t WIDTH = VGA_WIDTH;
     const uint16_t HEIGHT = VGA_HEIGHT;
 
-    const byte CLEAR_COLOR = 33;
-    const byte TEXT_COLOR = 00;
+    const byte CLEAR_COLOR = 00;
+    const byte TEXT_COLOR = 11;
 };
 
 const _PINS PINS;
 const _VGA VGA;
 
-byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
+byte vga_framebuffer[VGA_FRAMEBUFFER_SIZE];
 static byte aline, rlinecnt, vskip, afreq, afreq0;
 unsigned long vtimer;
 
 // from VGAX
 ISR(TIMER1_OVF_vect) {
 
-    aline -= 1;
+    aline = -1;
     vskip = SKIPLINES;
     vtimer++;
     rlinecnt = 0;
@@ -57,7 +58,7 @@ ISR(TIMER2_OVF_VECT) {
 
     // interrupt jitter fix
     // code from https://github.com/cnlohr/avrcraft/tree/master/terminal and VGAX
-    if (rlinecnt < VGA.HEIGHT) {
+    if (rlinecnt < VGA_HEIGHT) {
 
         asm volatile (
         "     lds r16, %[timer0]    \n\t" //
@@ -106,12 +107,12 @@ ISR(TIMER2_OVF_VECT) {
         "    out %[port], r16 \n\t" //write black for next pixels
         :
         : [port] "I" (_SFR_IO_ADDR(PORTD)),
-        "z" "I" (/*rline*/(byte*)vga_framebuffer + rlinecnt * VGA.WIDTH)
+        "z" "I" (/*rline*/(byte*)vga_framebuffer + rlinecnt * VGA_WIDTH)
         : "r16", "r17", "r20", "r21", "memory");
 
         if (++aline == CLONED_LINES) {
 
-            aline -= 1;
+            aline = -1;
             rlinecnt++;
 
         } else {
@@ -134,14 +135,14 @@ void vga_clear(byte color) {
     register byte c0 = (c * 4) | c;
     c0 |= c0 * 16;
 
-    memset(vga_framebuffer, c0, VGA_WIDTH * VGA_HEIGHT);
+    memset(vga_framebuffer, c0, (VGA_FRAMEBUFFER_SIZE));
 }
 
 // from VGAX
 void vga_copy(byte *src) {
 
     byte *o = (byte*)vga_framebuffer;
-    unsigned cnt = VGA.WIDTH * VGA.HEIGHT;
+    unsigned cnt = VGA_FRAMEBUFFER_SIZE;
     while (cnt--) *o++ = pgm_read_byte(src++);
 }
 
@@ -159,7 +160,7 @@ void vga_delay(int milliseconds) {
 // values can be 0-3
 void vga_draw_pixel(byte x, byte y, byte color) {
 
-    byte *p = vga_framebuffer + y * VGA.WIDTH + (x >> 2);
+    byte *p = vga_framebuffer + y * VGA_WIDTH + (x >> 2);
     byte bitpos = 6 - (x & 3) * 2;
     *p = (*p & ~(3 << bitpos)) | color << bitpos;
 }
@@ -197,13 +198,11 @@ void setup() {
     pinMode(PINS.B, OUTPUT);
 
     sei();
-
-    vga_clear(VGA.CLEAR_COLOR);
 }
 
 void loop() {
 
-    vga_clear(VGA.CLEAR_COLOR);
+    vga_clear(01);
 
     vga_delay(17);
 }
