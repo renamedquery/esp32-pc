@@ -3,6 +3,9 @@
 #include <Arduino.h>
 #include <stdlib.h>
 
+#define VGA_WIDTH 200
+#define VGA_HEIGHT 200
+
 struct _PINS {
 
     const byte R = 7;
@@ -15,8 +18,8 @@ struct _PINS {
 
 struct _VGA {
 
-    const uint16_t WIDTH = 200;
-    const uint16_t HEIGHT = 200;
+    const uint16_t WIDTH = VGA_WIDTH;
+    const uint16_t HEIGHT = VGA_HEIGHT;
 
     const uint16_t SKIPLINES = 20;
 
@@ -26,7 +29,7 @@ struct _VGA {
 const _PINS PINS;
 const _VGA VGA;
 
-volatile byte* vga_framebuffer = new byte[VGA.WIDTH * VGA.HEIGHT];
+volatile byte vga_framebuffer[VGA_WIDTH * VGA_HEIGHT];
 volatile byte aline, rlinecnt, vskip, afreq, afreq0;
 volatile unsigned long vtimer;
 
