@@ -38,7 +38,7 @@ static byte afreq, afreq0;
 unsigned long vtimer;
 static byte aline, rlinecnt;
 static byte vskip;
-bool vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
+bool vgaxfb[VGAX_BWIDTH * VGAX_HEIGHT];
 
 //VSYNC interrupt
 ISR(TIMER1_OVF_vect) {
@@ -256,8 +256,9 @@ void VGAX::end() {
   TCCR2A=0;
   TCCR2B=0;
 }
+// currently doesnt work, use fillrect instead
 void VGAX::clear(bool color) {
-  memset(vgaxfb, color, VGAX_BSIZE);
+  memset(vgaxfb, (byte)color, VGAX_BSIZE);
 }
 void VGAX::copy(byte *src) {
   byte *o=(byte*)vgaxfb;

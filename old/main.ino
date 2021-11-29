@@ -18,7 +18,7 @@ volatile long int i;
 void setup() {
 
     VGA.begin();
-    VGA.clear(VGA_BGCOLOR);
+    VGA.fillrect(0, 0, VGAX_WIDTH, VGAX_HEIGHT, VGA_BGCOLOR);
 }
 
 void loop() {

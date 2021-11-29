@@ -49,7 +49,7 @@ HERE you can find some inline documentation about the VGAX library class
 #define VGAX_SIZE (VGAX_WIDTH*VGAX_HEIGHT) //size of framebuffer in pixels
 
 //framebuffer. if you want you can write directly to this array. its safe
-extern bool vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
+extern bool vgaxfb[VGAX_BWIDTH * VGAX_HEIGHT];
 
 //clock replacement. this is increment in the VSYNC interrupt, so run at 60Hz
 extern unsigned long vtimer;
