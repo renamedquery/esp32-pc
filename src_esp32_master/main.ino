@@ -62,11 +62,14 @@ void loop() {
     while (Serial.available()) {
 
         String serial_string = Serial.readString();
+        serial_string.replace('\n', ' ');
+
         char serial_string_char[64];
         serial_string.toCharArray(serial_string_char, serial_string.length() + 1);
 
         vga.print(">");
-        vga.print(serial_string_char); // this ends in a newline so we dont need to add one
+        vga.print(serial_string_char);
+        vga.print("\n");
         vga.scroll(16, vga.RGB(0, 0, 0));
     }
 }
