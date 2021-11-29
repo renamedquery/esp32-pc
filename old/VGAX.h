@@ -43,7 +43,7 @@ HERE you can find some inline documentation about the VGAX library class
 #else
   #define VGAX_HEIGHT (60-25) //number of lines
 #endif
-#define VGAX_BWIDTH (30-4) //number of bytes in a row
+#define VGAX_BWIDTH (30-5) //number of bytes in a row
 #define VGAX_WIDTH (VGAX_BWIDTH*4) //number of pixels in a row
 #define VGAX_BSIZE (VGAX_BWIDTH*VGAX_HEIGHT) //size of framebuffer in bytes
 #define VGAX_SIZE (VGAX_WIDTH*VGAX_HEIGHT) //size of framebuffer in pixels
