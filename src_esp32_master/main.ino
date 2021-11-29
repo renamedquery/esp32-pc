@@ -64,5 +64,6 @@ void loop() {
 
         vga.print(">");
         vga.print(serial_string_char); // this ends in a newline so we dont need to add one
+        vga.scroll(16, vga.RGB(0, 0, 0));
     }
 }
