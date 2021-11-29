@@ -49,7 +49,7 @@ HERE you can find some inline documentation about the VGAX library class
 #define VGAX_SIZE (VGAX_WIDTH*VGAX_HEIGHT) //size of framebuffer in pixels
 
 //framebuffer. if you want you can write directly to this array. its safe
-extern bool vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
+extern byte vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
 
 //clock replacement. this is increment in the VSYNC interrupt, so run at 60Hz
 extern unsigned long vtimer;
@@ -73,8 +73,10 @@ public:
    *    y: vertical pixel coordinate. Must be less than VGAX_HEIGHT
    *    color: 2bit color. you must use only these values: 0 1 2 3
    */
-  static inline void putpixel(byte x, byte y, bool color) {
-    vgaxfb[(y * VGAX_BWIDTH) + x] = color;
+  static inline void putpixel(byte x, byte y, byte color) {
+    byte *p=vgaxfb + y*VGAX_BWIDTH + (x>>2);
+    byte bitpos=6-(x & 3)*2;
+    *p=(*p & ~(3 <<bitpos)) | color <<bitpos;
   }
   /*
    * getpixel(x, y)
@@ -119,7 +121,7 @@ public:
    * clear(color)
    *    color: 2bit color to clear the framebuffer
    */
-  static void clear(bool color);
+  static void clear(byte color);
   /*
    * copy(src)
    *    src: source data. src size must be equal to framebuffer
@@ -205,14 +207,14 @@ public:
    */
   static void printPROGMEM(byte *fnt, byte glyphscount, byte fntheight, 
                 byte hspace, byte vspace, const char *str, char dx, char dy, 
-                bool color);
+                byte color);
   /*
    * printSRAM(...)
    *    same as printPROGMEM but read from SRAM
    */
   static void printSRAM(byte *fnt, byte glyphscount, byte fntheight, 
                 byte hspace, byte vspace, const char *str, char dx, char dy, 
-                bool color);
+                byte color);
   /*
    * delay(msec)
    *    msec: number of milliseconds to wait
