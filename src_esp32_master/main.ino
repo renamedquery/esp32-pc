@@ -13,16 +13,17 @@ char pin_info[64] = "";
 
 void setup() {
 
-    sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
-
-    vga.init(vga.MODE500x480, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
+    vga.init(vga.MODE640x400, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
     vga.setFont(CodePage437_9x16);
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
+
+    sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
 
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
     vga.println("80MHZ CLOCK SPEED");
-    vga.println("500X400 PIXELS TOTAL");
+    vga.println("640X400 PIXELS TOTAL");
+    vga.println("3 BIT VGA");
     vga.println("");
 
     vga.println(pin_info);
@@ -40,7 +41,7 @@ void setup() {
     vga.println("BLUE COLOR TEST");
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
     vga.println("");
-    
+
     vga.println("DONE BOOTING");
     vga.println("");
 }
