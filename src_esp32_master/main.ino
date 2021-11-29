@@ -10,8 +10,11 @@ const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
 char pin_info[64] = "";
+char line_separator[48] = "-----------------------------------------------";
 
 void setup() {
+
+    Serial.begin(9600);
 
     vga.init(vga.MODE640x400, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
     vga.setFont(CodePage437_9x16);
@@ -44,8 +47,22 @@ void setup() {
 
     vga.println("DONE BOOTING");
     vga.println("");
+
+    vga.println(line_separator);
+    vga.println("");
+
+    Serial.println("SETUP IS DONE");
 }
 
 void loop() {
 
+    while (Serial.available()) {
+
+        String serial_string = Serial.readString();
+        char serial_string_char[64];
+        serial_string.toCharArray(serial_string_char, serial_string.length() + 1);
+
+        vga.print(">");
+        vga.print(serial_string_char); // this ends in a newline so we dont need to add one
+    }
 }
