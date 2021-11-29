@@ -53,6 +53,7 @@ void setup() {
 
     // so that the console input is on the bottom of the screen
     vga.println("");
+    vga.print(">");
 
     Serial.println("SETUP IS DONE");
 }
@@ -67,9 +68,9 @@ void loop() {
         char serial_string_char[64];
         serial_string.toCharArray(serial_string_char, serial_string.length() + 1);
 
-        vga.print(">");
         vga.print(serial_string_char);
         vga.print("\n");
         vga.scroll(16, vga.RGB(0, 0, 0));
+        vga.print(">");
     }
 }
