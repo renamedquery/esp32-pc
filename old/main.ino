@@ -30,7 +30,7 @@ void loop() {
 
     memcpy(vgaxfb_double_buffer, vgaxfb, sizeof(vgaxfb_double_buffer));
 
-    if (i % 2 == 0) VGA.fillrect(2, 1, VGAX_WIDTH, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
+    VGA.fillrect(2, 1, VGAX_WIDTH, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
 
     sprintf(TEST_STRING, "FRAMES: %d", i);
     sprintf(TEST_STRING_SIZEOF_FRAMEBUFFER, "FRAMEBUFF BYTES: %d", sizeof(vgaxfb));
