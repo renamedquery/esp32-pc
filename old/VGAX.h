@@ -50,6 +50,8 @@ HERE you can find some inline documentation about the VGAX library class
 
 //framebuffer. if you want you can write directly to this array. its safe
 extern bool vgaxfb[VGAX_BWIDTH * VGAX_HEIGHT];
+extern bool vgaxfb_double_buffer[VGAX_BWIDTH * VGAX_HEIGHT];
+extern bool vgaxfb_active_framebuffer; // 0 = vgaxfb, 1 = vgafxb_double_buffer
 
 //clock replacement. this is increment in the VSYNC interrupt, so run at 60Hz
 extern unsigned long vtimer;

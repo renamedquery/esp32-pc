@@ -39,6 +39,8 @@ unsigned long vtimer;
 static byte aline, rlinecnt;
 static byte vskip;
 bool vgaxfb[VGAX_BWIDTH * VGAX_HEIGHT];
+bool vgaxfb_double_buffer[VGAX_BWIDTH * VGAX_HEIGHT];
+bool vgaxfb_active_framebuffer = 0;
 
 //VSYNC interrupt
 ISR(TIMER1_OVF_vect) {
@@ -177,7 +179,7 @@ ISR(TIMER2_OVF_vect) {
     #else
     : [port] "I" (_SFR_IO_ADDR(PORTD)),
     #endif
-      "z" "I" (/*rline*/(byte*)vgaxfb + rlinecnt*VGAX_BWIDTH)
+      "z" "I" (/*rline*/(byte*)vgaxfb_double_buffer + rlinecnt*VGAX_BWIDTH)
     : "r16", "r17", "r20", "r21", "memory");
 
     //increment framebuffer line counter after 6 VGA lines
