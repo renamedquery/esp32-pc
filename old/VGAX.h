@@ -41,9 +41,9 @@ HERE you can find some inline documentation about the VGAX library class
 #elif defined(__AVR_ATmega2560__) && defined(ATMEGA2560_HIGHRES)
   #define VGAX_HEIGHT 80 //number of lines
 #else
-  #define VGAX_HEIGHT 60 //number of lines
+  #define VGAX_HEIGHT (60-25) //number of lines
 #endif
-#define VGAX_BWIDTH 30 //number of bytes in a row
+#define VGAX_BWIDTH (30-4) //number of bytes in a row
 #define VGAX_WIDTH (VGAX_BWIDTH*4) //number of pixels in a row
 #define VGAX_BSIZE (VGAX_BWIDTH*VGAX_HEIGHT) //size of framebuffer in bytes
 #define VGAX_SIZE (VGAX_WIDTH*VGAX_HEIGHT) //size of framebuffer in pixels
