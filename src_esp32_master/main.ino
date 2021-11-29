@@ -1,4 +1,4 @@
-#include "lib/ESP32Lib/ESP32Lib/src/ESP32Lib.h"
+#include <ESP32Lib.h>
 
 
 void setup() {
