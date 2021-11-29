@@ -27,16 +27,16 @@ void loop() {
     // dont clear the screen - it takes too long
     // only refresh the parts that need clearing (first line)
     //VGA.clear(VGA_BGCOLOR);
-    if (i % 2 == 0) VGA.fillrect(12, (VGAX_HEIGHT / 2) - 4 - 8, VGAX_WIDTH - 12, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
+    if (i % 2 == 0) VGA.fillrect(2, 1, VGAX_WIDTH, FNT_NANOFONT_HEIGHT, VGA_BGCOLOR);
 
     sprintf(TEST_STRING, "FRAMES: %d", i);
     sprintf(TEST_STRING_SIZEOF_FRAMEBUFFER, "FRAMEBUFF BYTES: %d", sizeof(vgaxfb));
 
-    VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING, 12, (VGAX_HEIGHT / 2) - 4 - 8, VGA_FGCOLOR);
-    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_INFO, 12, (VGAX_HEIGHT / 2) - 4, VGA_FGCOLOR);
-    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_DEVICE_NAME, 12, (VGAX_HEIGHT / 2) + 4, VGA_FGCOLOR);
-    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_DEVELOPER_NAME, 12, (VGAX_HEIGHT / 2) + 4 + 8, VGA_FGCOLOR);
-    VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_SIZEOF_FRAMEBUFFER, 12, (VGAX_HEIGHT / 2) + 4 + 8 + 8, VGA_FGCOLOR);
+    VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING, 2, 1, VGA_FGCOLOR);
+    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_INFO, 2, 1 + (7 * 1), VGA_FGCOLOR);
+    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_DEVICE_NAME, 2, 1 + (7 * 2), VGA_FGCOLOR);
+    VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_DEVELOPER_NAME, 2, 1 + (7 * 3), VGA_FGCOLOR);
+    VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_SIZEOF_FRAMEBUFFER, 2, 1 + (7 * 4), VGA_FGCOLOR);
 
     VGA.delay(17 * 2);
 
