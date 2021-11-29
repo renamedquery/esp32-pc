@@ -14,7 +14,7 @@ const char TEST_STRING_INFO[32] PROGMEM = "2KB SRAM/8MHZ CLK";
 const char TEST_STRING_DEVICE_NAME[32] PROGMEM = "ARDUINO UNO R3";
 const char TEST_STRING_DEVELOPER_NAME[32] PROGMEM = "KATZNBOYZ 2021";
 
-volatile long int i;
+volatile uint64_t i;
 
 void setup() {
 
