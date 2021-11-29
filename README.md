@@ -2,7 +2,7 @@
 
 ### This repo is currently a work in progress - I am using an arduino to test some things out before the ESP32s arrive in the mail.
 
-https://i.imgur.com/T6GVrrT.mp4
+https://user-images.githubusercontent.com/38505228/143876980-7caafec9-4235-4df6-8e7e-9e294438839e.mp4
 
 *I was able to get a 105x35 VGA output from an Arduino Uno R3 using the VGAX library. I plan to do a similar thing, albeit more complicated, on an ESP32.*
 
