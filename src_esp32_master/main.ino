@@ -10,7 +10,7 @@ const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
 char pin_info[64] = "";
-char line_separator[48] = "-----------------------------------------------";
+char line_separator[64] = "---------------------------------------------------------------";
 
 void setup() {
 
