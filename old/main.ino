@@ -41,7 +41,7 @@ void loop() {
     VGA.printPROGMEM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_DEVELOPER_NAME, 2, 1 + (7 * 3), VGA_FGCOLOR);
     VGA.printSRAM((byte*)fnt_nanofont_data, FNT_NANOFONT_SYMBOLS_COUNT, FNT_NANOFONT_HEIGHT, 3, 1, TEST_STRING_SIZEOF_FRAMEBUFFER, 2, 1 + (7 * 4), VGA_FGCOLOR);
 
-    VGA.delay(17 * 2);
+    VGA.delay(17 * 4);
 
     i++;
 }
