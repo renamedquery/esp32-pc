@@ -49,7 +49,7 @@ HERE you can find some inline documentation about the VGAX library class
 #define VGAX_SIZE (VGAX_WIDTH*VGAX_HEIGHT) //size of framebuffer in pixels
 
 //framebuffer. if you want you can write directly to this array. its safe
-extern byte vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
+extern bool vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
 
 //clock replacement. this is increment in the VSYNC interrupt, so run at 60Hz
 extern unsigned long vtimer;
@@ -74,7 +74,7 @@ public:
    *    color: 2bit color. you must use only these values: 0 1 2 3
    */
   static inline void putpixel(byte x, byte y, byte color) {
-    byte *p=vgaxfb + y*VGAX_BWIDTH + (x>>2);
+    byte *p=(byte *)vgaxfb + y*VGAX_BWIDTH + (x>>2);
     byte bitpos=6-(x & 3)*2;
     *p=(*p & ~(3 <<bitpos)) | color <<bitpos;
   }
@@ -121,7 +121,7 @@ public:
    * clear(color)
    *    color: 2bit color to clear the framebuffer
    */
-  static void clear(byte color);
+  static void clear(bool color);
   /*
    * copy(src)
    *    src: source data. src size must be equal to framebuffer
@@ -168,7 +168,7 @@ public:
    *
    * blit[N]wmask versions are optimized for swidth=[N] cases
    */
-  static void blitwmask(byte *src, byte *mask, byte swidth, byte sheight,
+  static void blitwmask(byte *src, bool *mask, byte swidth, byte sheight,
                 char dx, char dy);
   static void blit8wmask(byte *src, byte *mask, byte sheight, char dx, char dy);
   /*
@@ -191,7 +191,7 @@ public:
    *    height: height of the rect in pixels
    *    color: color of the rect
    */
-  static void fillrect(byte x, byte y, byte width, byte height, byte color);
+  static void fillrect(byte x, byte y, byte width, byte height, bool color);
   /*
    * print(fnt, glyphscount, fntheight, hspace, vspace, str, dx, dy, color)
    *    fnt: font definition, generated from 2BITFONT tool

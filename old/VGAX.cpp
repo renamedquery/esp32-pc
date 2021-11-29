@@ -38,7 +38,7 @@ static byte afreq, afreq0;
 unsigned long vtimer;
 static byte aline, rlinecnt;
 static byte vskip;
-byte vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
+bool vgaxfb[VGAX_HEIGHT*VGAX_BWIDTH];
 
 //VSYNC interrupt
 ISR(TIMER1_OVF_vect) {
@@ -256,12 +256,8 @@ void VGAX::end() {
   TCCR2A=0;
   TCCR2B=0;
 }
-void VGAX::clear(byte color) {
-  register byte c=color;
-  c&=3;
-  register byte c0=(c*4) | c;
-  c0|=c0*16;
-  memset(vgaxfb, c0, VGAX_BSIZE);
+void VGAX::clear(bool color) {
+  memset(vgaxfb, color, VGAX_BSIZE);
 }
 void VGAX::copy(byte *src) {
   byte *o=(byte*)vgaxfb;
@@ -269,7 +265,7 @@ void VGAX::copy(byte *src) {
   while (cnt--)
     *o++=pgm_read_byte(src++);
 }
-void VGAX::fillrect(byte x, byte y, byte width, byte height, byte color) {
+void VGAX::fillrect(byte x, byte y, byte width, byte height, bool color) {
   byte rh=height;
   while (rh--) {
     byte rw=width, rx=x;

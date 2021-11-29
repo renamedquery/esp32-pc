@@ -48,10 +48,10 @@ void VGAX::blit(byte *src, byte swidth, byte sheight, char dx, char dy) {
     }
   }
 }
-void VGAX::blitwmask(byte *src, byte *mask, byte swidth, byte sheight, char dx, char dy) {
+void VGAX::blitwmask(byte *src, bool *mask, byte swidth, byte sheight, char dx, char dy) {
   byte sh=sheight;
   byte *srcline=src;
-  byte *maskline=mask;
+  bool *maskline=mask;
   byte linesize=swidth>>2;
   if (swidth & 3)
       linesize++;
@@ -69,7 +69,7 @@ void VGAX::blitwmask(byte *src, byte *mask, byte swidth, byte sheight, char dx, 
           byte spixel=(p >> sbitpos) & 3;
           byte mpixel=(m >> sbitpos) & 3;
           //set framebuffer pixel with AND+OR blit
-          byte *pfb=vgaxfb + dy*VGAX_BWIDTH + (ldx>>2);
+          byte *pfb=(byte *)vgaxfb + dy*VGAX_BWIDTH + (ldx>>2);
           byte dbitpos=6-(ldx & 3)*2;
           *pfb &=(mpixel << dbitpos) | ~(3<<dbitpos);
           *pfb |=(spixel << dbitpos);

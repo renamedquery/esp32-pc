@@ -5,8 +5,8 @@
 
 VGAX VGA;
 
-const byte VGA_BGCOLOR = 11;
-const byte VGA_FGCOLOR = 00;
+const bool VGA_BGCOLOR = 1;
+const bool VGA_FGCOLOR = 0;
 
 char TEST_STRING[32] = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 const char TEST_STRING_INFO[32] PROGMEM = "32KB SRAM / 8MHZ CLK";
