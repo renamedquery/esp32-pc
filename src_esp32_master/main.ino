@@ -51,6 +51,9 @@ void setup() {
     vga.println(line_separator);
     vga.println("");
 
+    // so that the console input is on the bottom of the screen
+    vga.println("");
+
     Serial.println("SETUP IS DONE");
 }
 
