@@ -40,7 +40,6 @@ static byte aline, rlinecnt;
 static byte vskip;
 bool vgaxfb[VGAX_BWIDTH * VGAX_HEIGHT];
 bool vgaxfb_double_buffer[VGAX_BWIDTH * VGAX_HEIGHT];
-bool vgaxfb_active_framebuffer = 0;
 
 //VSYNC interrupt
 ISR(TIMER1_OVF_vect) {
