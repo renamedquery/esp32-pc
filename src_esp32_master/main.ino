@@ -16,6 +16,7 @@
 #define MAX_BYTES (520*8*1000)
 #define MAX_SPI_SEND_LENGTH 64
 #define SLAVE_COUNT 2
+#define SLAVE_SERIAL_BAUD_RATE 9600
 
 VGA3Bit vga;
 
@@ -33,7 +34,8 @@ const int SLAVE_SERIAL_PINS[SLAVE_COUNT][2] = {
     {36, 39}
 };
 
-SoftwareSerial slave_serials[SLAVE_COUNT];
+SoftwareSerial slave_serial_1(SLAVE_SERIAL_PINS[0][0], SLAVE_SERIAL_PINS[0][1], false);
+SoftwareSerial slave_serial_2(SLAVE_SERIAL_PINS[1][0], SLAVE_SERIAL_PINS[1][1], false);
 
 uint8_t connected_slaves = 0;
 
@@ -58,17 +60,16 @@ void serial_init() {
         pinMode(SLAVE_SERIAL_PINS[i][0], INPUT);
         pinMode(SLAVE_SERIAL_PINS[i][1], OUTPUT);
 
-        slave_serials[i].begin(9600, SWSERIAL_8N1, SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], false);
-
         char software_serial_status[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
-        sprintf(software_serial_status, "STARTED SOFTWARE SERIAL ON RX=%d TX=%d LISTENING=%d", SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], slave_serials[i].isListening());
-
-        slave_serials[i].println("TEST"); // just to test, you will see the leds blinking
+        sprintf(software_serial_status, "SET PINMODE FOR RX=%d=INPUT TX=%d=OUTPUT", SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1]);
 
         scroll_terminal(1);
 
         vga.println(software_serial_status);
     }
+
+    slave_serial_1.begin(SLAVE_SERIAL_BAUD_RATE);
+    slave_serial_2.begin(SLAVE_SERIAL_BAUD_RATE);
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -191,12 +192,23 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         vga.println("SERIAL SUCCESSFULLY INITIALIZED WITHOUT AN ERROR");
 
+    } else if (command_string.substring(7, 7 + 4).equals("test")) {
+
+        slave_serial_1.println("test message for slave device 1");
+        scroll_terminal(1);
+        vga.println("SUCCESSFULLY SENT A TEST MESSAGE SERIAL DEVICE 1");
+
+        slave_serial_2.println("test message for slave device 2");
+        scroll_terminal(1);
+        vga.println("SUCCESSFULLY SENT A TEST MESSAGE SERIAL DEVICE 2");
+
     } else {
 
-        scroll_terminal(2);
+        scroll_terminal(3);
 
         vga.println("UNKNOWN SERIAL COMMAND. COMMANDS ARE:");
         vga.println("serial init - INITIALIZES THE SERIAL INTERFACE");
+        vga.println("serial test - SENDS OUT A TEST MESSAGE TO ALL SERIAL DEVICES");
     }
 
     return 0;

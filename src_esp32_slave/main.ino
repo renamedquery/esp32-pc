@@ -12,11 +12,12 @@ const int SLAVE_SELECT_PIN = 35;
 
 char serial_recieve_data[MAX_SERIAL_RECIEVE_LENGTH] = "";
 
-SoftwareSerial ser;
+SoftwareSerial ser(SER_RX_PIN, SER_TX_PIN, false);
 
 void setup() {
     
     Serial.begin(9600);
+    ser.begin(9600);
 
     pinMode(LED_PIN, OUTPUT);
 
@@ -31,27 +32,21 @@ void setup() {
 
     delay(500);
 
-    ser.begin(9600, SWSERIAL_8N1, SER_RX_PIN, SER_TX_PIN, false);
-
     Serial.println("SLAVE DEVICE FINISHED INITIALIZATION");
 }
 
 void loop() {
 
-    int available_serial = max(ser.available(), Serial.available());
-
-    if (available_serial > 0) {
+    if (ser.available() > 0 || Serial.available() > 0) {
 
         digitalWrite(LED_PIN, HIGH);
 
-        delay(1000);
+        delay(50);
 
-        char buff[MAX_SERIAL_RECIEVE_LENGTH];
-
-        ser.readBytes(buff, MAX_SERIAL_RECIEVE_LENGTH);
-        Serial.readBytes(buff, MAX_SERIAL_RECIEVE_LENGTH);
-
-        available_serial = 0;
+        ser.read();
+        Serial.read();
+    
+    } else {
 
         digitalWrite(LED_PIN, LOW);
     }
