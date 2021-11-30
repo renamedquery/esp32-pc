@@ -111,7 +111,7 @@ void loop() {
             sprintf(fbinfo_line3, "    SCREEN SIZE: %d PIXELS", SCREEN_SIZE);
             sprintf(fbinfo_line4, "    SCREEN COLORS: %d BIT", SCREEN_BITDEPTH);
 
-            scroll_terminal(4);
+            scroll_terminal(5);
 
             vga.println("FRAMEBUFFER INFORMATION:");
             vga.println(fbinfo_line1);
@@ -134,7 +134,7 @@ void loop() {
             sprintf(hwinfo_line5, "    HORIZONTAL SYNC PIN: %d", PIN_HSYNC);
 
             scroll_terminal(6);
-            
+
             vga.println("HARDWARE INFORMATION");
             vga.println(hwinfo_line1);
             vga.println(hwinfo_line2);
