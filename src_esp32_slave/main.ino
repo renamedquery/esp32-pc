@@ -1,3 +1,5 @@
+#define CONFIG_IDF_TARGET_ESP32 1
+
 #include <ESP32Lib.h>
 #include <SoftwareSerial.h> // https://github.com/plerup/espsoftwareserial
 
@@ -23,9 +25,11 @@ void setup() {
 
     digitalWrite(LED_PIN, HIGH);
 
-    delay(1000);
+    delay(500);
 
     digitalWrite(LED_PIN, LOW);
+
+    delay(500);
 
     ser.begin(9600, SWSERIAL_8N1, SER_RX_PIN, SER_TX_PIN, false);
 
@@ -34,7 +38,7 @@ void setup() {
 
 void loop() {
 
-    int available_serial = ser.available();
+    int available_serial = max(ser.available(), Serial.available());
 
     if (available_serial > 0) {
 
@@ -42,7 +46,12 @@ void loop() {
 
         delay(1000);
 
-        ser.flush();
+        char buff[MAX_SERIAL_RECIEVE_LENGTH];
+
+        ser.readBytes(buff, MAX_SERIAL_RECIEVE_LENGTH);
+        Serial.readBytes(buff, MAX_SERIAL_RECIEVE_LENGTH);
+
+        available_serial = 0;
 
         digitalWrite(LED_PIN, LOW);
     }

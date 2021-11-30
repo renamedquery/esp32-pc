@@ -1,3 +1,5 @@
+#define CONFIG_IDF_TARGET_ESP32 1
+
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
