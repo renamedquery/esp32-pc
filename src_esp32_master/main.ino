@@ -20,6 +20,8 @@ const int PIN_B = 27;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
+uint8_t connected_slaves = 0;
+
 char pin_info[64] = "";
 char line_separator[64] = "---------------------------------------------------------------";
 
@@ -108,6 +110,24 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("         RESOLUTION AND BIT DEPTH");
     vga.println("hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED");
     vga.println("         TO WHAT FUNCTION");
+
+    return 0;
+}
+
+int cli_cmd_lsdev(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    char amount_of_slave_devices_text[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+
+    sprintf(amount_of_slave_devices_text, "LISTING %d CONNECTED SLAVE DEVICES:", connected_slaves);
+
+    scroll_terminal(1);
+
+    vga.println(amount_of_slave_devices_text);
+
+    for (int i = 0; i < connected_slaves; i++) {
+
+        // find information about the slave and print it
+    }
 
     return 0;
 }
@@ -230,6 +250,7 @@ void loop() {
         if (serial_string.substring(0, 5).equals("fbmem")) {cli_output(&cli_cmd_fbmem, serial_string_char);}
         else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char);} 
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char);} 
+        else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char);} 
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
