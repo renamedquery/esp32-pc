@@ -9,13 +9,12 @@ https://user-images.githubusercontent.com/38505228/143976371-19a70a72-b58a-4c94-
 ### Specs:
 
 - 520KB RAM
-
 - 448KB ROM
-
 - 80MHz processor clock speed
-
 - 3 bit VGA colors (RGB)
-
 - 640x480 output resolution
-
 - 6 physical ESP32 devices
+
+### Why am I doing this?
+
+I have quite a bit of experience programming on high end desktop computers, and thought that it would be useful to learn how to program on a system with much tighter tolerances and lower specs.
