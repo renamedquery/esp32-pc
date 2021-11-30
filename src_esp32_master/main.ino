@@ -44,8 +44,8 @@ byte get_clock_speed_cpu_mhz() {
 
 int cli_cmd_fbmem(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    char memused_line1[MAX_CLI_OUTPUT_LENGTH] = "";
-    char memused_line2[MAX_CLI_OUTPUT_LENGTH] = "";
+    char memused_line1[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char memused_line2[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
     sprintf(memused_line1, "    FRAMEBUFFER 1: %d BYTES", (SCREEN_SIZE * sizeof(unsigned long)));
     sprintf(memused_line2, "    FRAMEBUFFER 2: %d BYTES", (SCREEN_SIZE * sizeof(unsigned long)));
@@ -61,10 +61,10 @@ int cli_cmd_fbmem(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_fbinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    char fbinfo_line1[MAX_CLI_OUTPUT_LENGTH] = "";
-    char fbinfo_line2[MAX_CLI_OUTPUT_LENGTH] = "";
-    char fbinfo_line3[MAX_CLI_OUTPUT_LENGTH] = "";
-    char fbinfo_line4[MAX_CLI_OUTPUT_LENGTH] = "";
+    char fbinfo_line1[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char fbinfo_line2[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char fbinfo_line3[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char fbinfo_line4[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
     sprintf(fbinfo_line1, "    SCREEN WIDTH: %d PIXELS", SCREEN_WIDTH);
     sprintf(fbinfo_line2, "    SCREEN HEIGHT: %d PIXELS", SCREEN_HEIGHT);
@@ -84,13 +84,13 @@ int cli_cmd_fbinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    char hwinfo_line1[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line2[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line3[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line4[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line5[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line6[MAX_CLI_OUTPUT_LENGTH] = "";
-    char hwinfo_line7[MAX_CLI_OUTPUT_LENGTH] = "";
+    char hwinfo_line1[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line2[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line3[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line4[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line5[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line6[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    char hwinfo_line7[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     
     sprintf(hwinfo_line1, "    RED COLOR PIN: %d", PIN_R);
     sprintf(hwinfo_line2, "    GREEN COLOR PIN: %d", PIN_G);
