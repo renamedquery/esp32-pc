@@ -13,6 +13,7 @@
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
 #define MAX_SPI_SEND_LENGTH 64
+#define SLAVE_COUNT 2
 
 VGA3Bit vga;
 
@@ -24,7 +25,7 @@ const int PIN_B = 27;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
-SPIClass main_spi(HSPI);
+const int SLAVE_SELECT_PINS[SLAVE_COUNT] = {34, 35};
 
 uint8_t connected_slaves = 0;
 
@@ -44,14 +45,24 @@ byte get_clock_speed_cpu_mhz() {
 
 void spi_init() {
 
-    main_spi.begin();
-    main_spi.setClockDivider(SPI_CLOCK_DIV8);
+    SPI.begin();
+    SPI.setClockDivider(SPI_CLOCK_DIV8);
 
-    char spi_send_data[MAX_SPI_SEND_LENGTH] = "TEST DATA";
+    for (byte i = 0; i < SLAVE_COUNT; i++) {
 
-    for (int i = 0; i < sizeof(spi_send_data); i++) {
+        digitalWrite(SLAVE_SELECT_PINS[i], LOW);
 
-        main_spi.transfer(spi_send_data[i]);
+        byte response = SPI.transfer(i);
+
+        char slave_response_msg[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+
+        sprintf(slave_response_msg, "SLAVE %d RESPONDED WITH: %d", i, response);
+
+        scroll_terminal(1);
+
+        vga.println(slave_response_msg);
+
+        digitalWrite(SLAVE_SELECT_PINS[i], HIGH);
     }
 }
 
@@ -286,6 +297,12 @@ void setup() {
     vga.println("BLUE COLOR TEST");
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
     vga.println("");
+
+    for (byte i = 0; i < SLAVE_COUNT; i++) {
+
+        pinMode(SLAVE_SELECT_PINS[i], OUTPUT);
+        digitalWrite(SLAVE_SELECT_PINS[i], HIGH);
+    }
 
     vga.println("DONE BOOTING");
     vga.println("");
