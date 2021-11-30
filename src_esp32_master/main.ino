@@ -1,7 +1,7 @@
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
-#include <SPI.h>
+#include <SoftwareSerial.h> // https://github.com/plerup/espsoftwareserial
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -13,19 +13,25 @@
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
 #define MAX_SPI_SEND_LENGTH 64
-#define SLAVE_COUNT 1
+#define SLAVE_COUNT 2
 
 VGA3Bit vga;
 
 typedef int (*cli_function)(char[MAX_CLI_INPUT_LENGTH]);
 
-const int PIN_R = 25;
+const int PIN_R = 27;
 const int PIN_G = 26;
-const int PIN_B = 27;
+const int PIN_B = 25;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
-const int SLAVE_SELECT_PINS[SLAVE_COUNT] = {35};
+// {rx, tx}
+const int SLAVE_SERIAL_PINS[SLAVE_COUNT][2] = {
+    {34, 35},
+    {36, 39}
+};
+
+SoftwareSerial slave_serials[SLAVE_COUNT];
 
 uint8_t connected_slaves = 0;
 
@@ -43,27 +49,24 @@ byte get_clock_speed_cpu_mhz() {
     return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
 }
 
-void spi_init() {
+void serial_init() {
 
-    // clk, miso, mosi, ss...
-    SPI.begin(36, 39, 34, SLAVE_SELECT_PINS[0]);
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
+    for (int i = 0; i < SLAVE_COUNT; i++) {
 
-    for (byte i = 0; i < SLAVE_COUNT; i++) {
+        pinMode(SLAVE_SERIAL_PINS[i][0], INPUT);
+        pinMode(SLAVE_SERIAL_PINS[i][1], OUTPUT);
 
-        digitalWrite(SLAVE_SELECT_PINS[i], LOW);
+        slave_serials[i].begin(9600, SWSERIAL_8N1, SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], false);
 
-        byte response = SPI.transfer(i);
+        // give it a second to think
+        delay(50);
 
-        char slave_response_msg[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
-
-        sprintf(slave_response_msg, "SLAVE %d RESPONDED WITH: %d", i, response);
+        char software_serial_status[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+        sprintf(software_serial_status, "STARTED SOFTWARE SERIAL ON RX=%d TX=%d LISTENING=%d", SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], slave_serials[i].isListening());
 
         scroll_terminal(1);
 
-        vga.println(slave_response_msg);
-
-        digitalWrite(SLAVE_SELECT_PINS[i], HIGH);
+        vga.println(software_serial_status);
     }
 }
 
@@ -152,7 +155,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED");
     vga.println("         TO WHAT FUNCTION");
     vga.println("lsdev - PRINTS A LIST OF THE CONNECTED SLAVE DEVICES");
-    vga.println("spi <cmd> - EXECUTES AN ACTION TO THE SPI INTERFACE");
+    vga.println("serial <cmd> - EXECUTES AN ACTION ON THE SERIAL INTERFACE");
 
     return 0;
 }
@@ -175,24 +178,24 @@ int cli_cmd_lsdev(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
-int cli_cmd_spi(char full_command[MAX_CLI_INPUT_LENGTH]) {
+int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
 
-    if (command_string.substring(4, 4 + 4).equals("init")) {
+    if (command_string.substring(7, 7 + 4).equals("init")) {
 
-        spi_init();
+        serial_init();
 
         scroll_terminal(1);
 
-        vga.println("SPI SUCCESSFULLY INITIALIZED WITHOUT AN ERROR");
+        vga.println("SERIAL SUCCESSFULLY INITIALIZED WITHOUT AN ERROR");
 
     } else {
 
         scroll_terminal(2);
 
-        vga.println("UNKNOWN SPI COMMAND. COMMANDS ARE:");
-        vga.println("spi init - INITIALIZES THE SPI INTERFACE");
+        vga.println("UNKNOWN SERIAL COMMAND. COMMANDS ARE:");
+        vga.println("serial init - INITIALIZES THE SERIAL INTERFACE");
     }
 
     return 0;
@@ -299,12 +302,6 @@ void setup() {
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
     vga.println("");
 
-    for (byte i = 0; i < SLAVE_COUNT; i++) {
-
-        pinMode(SLAVE_SELECT_PINS[i], OUTPUT);
-        digitalWrite(SLAVE_SELECT_PINS[i], HIGH);
-    }
-
     vga.println("DONE BOOTING");
     vga.println("");
 
@@ -336,7 +333,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
-        else if (serial_string.substring(0, 3).equals("spi")) {cli_output(&cli_cmd_spi, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 6).equals("serial")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 

@@ -3,10 +3,9 @@
 #include <Arduino.h>
 #include <SPI.h>
 
-#define SS 35
 #define MAX_SPI_RECIEVE_LENGTH 64
 
-const int SLAVE_SELECT_PIN = 27;
+const int SLAVE_SELECT_PIN = 35;
 
 char spi_recieve_data[MAX_SPI_RECIEVE_LENGTH] = "";
 
@@ -23,9 +22,9 @@ void setup() {
     
     Serial.begin(9600);
 
-    attachInterrupt(digitalPinToInterrupt(SLAVE_SELECT_PIN), spi_interrupt, LOW);
+    attachInterrupt(digitalPinToInterrupt(SLAVE_SELECT_PIN), spi_interrupt, FALLING);
 
-    SPI.begin(36, 39, 34, 35);
+    SPI.begin(36, 39, 34, SLAVE_SELECT_PIN);
     SPI.setClockDivider(SPI_CLOCK_DIV8);
 }
 
