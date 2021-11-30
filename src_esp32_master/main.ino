@@ -122,14 +122,22 @@ int cli_cmd_nop(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    int return_value = function(full_command);
+    try {
 
-    char return_value_char[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+        int return_value = function(full_command);
 
-    sprintf(return_value_char, "%d", return_value);
+        char return_value_char[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
-    scroll_terminal(1);
-    vga.println(return_value_char);
+        sprintf(return_value_char, "%d", return_value);
+
+        scroll_terminal(1);
+        vga.println(return_value_char);
+
+    } catch (...) {
+
+        scroll_terminal(1);
+        vga.println("ERROR WHILE RUNNING COMMAND. EXIT STATUS CAN NOT BE DETERMINED.");
+    }
 }
 
 void cli_nocmd() {
