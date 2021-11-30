@@ -143,6 +143,15 @@ int cli_cmd_nop(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
+int cli_cmd_err(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    // for testing, and throwing errors in scripts
+
+    throw nullptr;
+
+    return 0;
+}
+
 void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH], VGA3Bit &vga_output) {
 
     try {
@@ -254,6 +263,7 @@ void loop() {
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
     }
