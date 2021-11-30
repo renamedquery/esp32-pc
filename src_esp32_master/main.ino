@@ -13,7 +13,7 @@
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
 #define MAX_SPI_SEND_LENGTH 64
-#define SLAVE_COUNT 2
+#define SLAVE_COUNT 1
 
 VGA3Bit vga;
 
@@ -25,7 +25,7 @@ const int PIN_B = 27;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
-const int SLAVE_SELECT_PINS[SLAVE_COUNT] = {34, 35};
+const int SLAVE_SELECT_PINS[SLAVE_COUNT] = {35};
 
 uint8_t connected_slaves = 0;
 
@@ -45,7 +45,8 @@ byte get_clock_speed_cpu_mhz() {
 
 void spi_init() {
 
-    SPI.begin();
+    // clk, miso, mosi, ss...
+    SPI.begin(36, 39, 34, SLAVE_SELECT_PINS[0]);
     SPI.setClockDivider(SPI_CLOCK_DIV8);
 
     for (byte i = 0; i < SLAVE_COUNT; i++) {
