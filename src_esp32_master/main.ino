@@ -133,19 +133,35 @@ void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH]) 
         sprintf(return_value_char, "%d", return_value);
 
         scroll_terminal(1);
+
+        if (return_value != 0) {vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));}
+        else {vga.setTextColor(vga.RGB(0, 255, 0), vga.RGB(0, 0, 0));}
+
         vga.println(return_value_char);
+
+        vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
 
     } catch (...) {
 
         scroll_terminal(1);
+
+        vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));
+
         vga.println("ERROR WHILE RUNNING COMMAND. EXIT STATUS CAN NOT BE DETERMINED.");
+
+        vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
     }
 }
 
 void cli_nocmd() {
 
     scroll_terminal(1);
+
+    vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));
+
     vga.println("UNKNOWN COMMAND");
+
+    vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
 }
 
 // ----------------------------------------------------------------------------------------------------------
