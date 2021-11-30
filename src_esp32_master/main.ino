@@ -12,6 +12,7 @@
 #define CLI_LINE_HEIGHT 16
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
+#define MAX_SPI_SEND_LENGTH 64
 
 VGA3Bit vga;
 
@@ -44,7 +45,14 @@ byte get_clock_speed_cpu_mhz() {
 void spi_init() {
 
     main_spi.begin();
-    main_spi.setClockDivider(SPI_CLOCK_DIV4);
+    main_spi.setClockDivider(SPI_CLOCK_DIV8);
+
+    char spi_send_data[MAX_SPI_SEND_LENGTH] = "TEST DATA";
+
+    for (int i = 0; i < sizeof(spi_send_data); i++) {
+
+        main_spi.transfer(spi_send_data[i]);
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------------
