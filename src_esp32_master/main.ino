@@ -125,13 +125,14 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(6);
+    scroll_terminal(7);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
     vga.println("hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED");
     vga.println("         TO WHAT FUNCTION");
     vga.println("lsdev - PRINTS A LIST OF THE CONNECTED SLAVE DEVICES");
+    vga.println("spi <cmd> - EXECUTES AN ACTION TO THE SPI INTERFACE");
 
     return 0;
 }
