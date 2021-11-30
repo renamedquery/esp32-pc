@@ -58,11 +58,10 @@ void serial_init() {
 
         slave_serials[i].begin(9600, SWSERIAL_8N1, SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], false);
 
-        // give it a second to think
-        delay(50);
-
         char software_serial_status[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
         sprintf(software_serial_status, "STARTED SOFTWARE SERIAL ON RX=%d TX=%d LISTENING=%d", SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1], slave_serials[i].isListening());
+
+        slave_serials[i].println("TEST"); // just to test, you will see the leds blinking
 
         scroll_terminal(1);
 

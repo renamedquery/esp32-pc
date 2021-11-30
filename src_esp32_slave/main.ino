@@ -1,39 +1,49 @@
-// to get this to work, you need to change 
+#include <ESP32Lib.h>
+#include <SoftwareSerial.h> // https://github.com/plerup/espsoftwareserial
 
-#include <Arduino.h>
-#include <SPI.h>
-
-#define MAX_SPI_RECIEVE_LENGTH 64
+#define MAX_SERIAL_RECIEVE_LENGTH 64
+#define LED_PIN 27
+#define SER_RX_PIN 26
+#define SER_TX_PIN 25
 
 const int SLAVE_SELECT_PIN = 35;
 
-char spi_recieve_data[MAX_SPI_RECIEVE_LENGTH] = "";
+char serial_recieve_data[MAX_SERIAL_RECIEVE_LENGTH] = "";
 
-bool data_to_be_interpreted = false;
-
-void spi_interrupt() {
-    
-    SPI.transfer(9);
-
-    data_to_be_interpreted = true;
-}
+SoftwareSerial ser;
 
 void setup() {
     
     Serial.begin(9600);
 
-    attachInterrupt(digitalPinToInterrupt(SLAVE_SELECT_PIN), spi_interrupt, FALLING);
+    pinMode(LED_PIN, OUTPUT);
 
-    SPI.begin(36, 39, 34, SLAVE_SELECT_PIN);
-    SPI.setClockDivider(SPI_CLOCK_DIV8);
+    pinMode(SER_RX_PIN, INPUT);
+    pinMode(SER_TX_PIN, OUTPUT);
+
+    digitalWrite(LED_PIN, HIGH);
+
+    delay(1000);
+
+    digitalWrite(LED_PIN, LOW);
+
+    ser.begin(9600, SWSERIAL_8N1, SER_RX_PIN, SER_TX_PIN, false);
+
+    Serial.println("SLAVE DEVICE FINISHED INITIALIZATION");
 }
 
 void loop() {
 
-    if (data_to_be_interpreted) { 
-        
-        Serial.println(data_to_be_interpreted);
+    int available_serial = ser.available();
 
-        data_to_be_interpreted = false;
+    if (available_serial > 0) {
+
+        digitalWrite(LED_PIN, HIGH);
+
+        delay(1000);
+
+        ser.flush();
+
+        digitalWrite(LED_PIN, LOW);
     }
 }
