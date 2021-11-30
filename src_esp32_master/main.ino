@@ -110,6 +110,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("         RESOLUTION AND BIT DEPTH");
     vga.println("hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED");
     vga.println("         TO WHAT FUNCTION");
+    vga.println("lsdev - PRINTS A LIST OF THE CONNECTED SLAVE DEVICES");
 
     return 0;
 }
@@ -142,7 +143,7 @@ int cli_cmd_nop(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
-void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH]) {
+void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH], VGA3Bit &vga_output) {
 
     try {
 
@@ -154,22 +155,22 @@ void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH]) 
 
         scroll_terminal(1);
 
-        if (return_value != 0) {vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));}
-        else {vga.setTextColor(vga.RGB(0, 255, 0), vga.RGB(0, 0, 0));}
+        if (return_value != 0) {vga_output.setTextColor(vga_output.RGB(255, 0, 0), vga_output.RGB(0, 0, 0));}
+        else {vga_output.setTextColor(vga_output.RGB(0, 255, 0), vga_output.RGB(0, 0, 0));}
 
-        vga.println(return_value_char);
+        vga_output.println(return_value_char);
 
-        vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
+        vga_output.setTextColor(vga_output.RGB(255, 255, 255), vga_output.RGB(0, 0, 0));
 
     } catch (...) {
 
         scroll_terminal(1);
 
-        vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));
+        vga_output.setTextColor(vga_output.RGB(255, 0, 0), vga_output.RGB(0, 0, 0));
 
-        vga.println("ERROR WHILE RUNNING COMMAND. EXIT STATUS CAN NOT BE DETERMINED.");
+        vga_output.println("ERROR WHILE RUNNING COMMAND. EXIT STATUS CAN NOT BE DETERMINED.");
 
-        vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
+        vga_output.setTextColor(vga_output.RGB(255, 255, 255), vga_output.RGB(0, 0, 0));
     }
 }
 
@@ -247,12 +248,12 @@ void loop() {
         vga.print("\n");
         scroll_terminal(1);
 
-        if (serial_string.substring(0, 5).equals("fbmem")) {cli_output(&cli_cmd_fbmem, serial_string_char);}
-        else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char);} 
-        else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char);} 
-        else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char);} 
-        else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char);} 
-        else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char);} 
+        if (serial_string.substring(0, 5).equals("fbmem")) {cli_output(&cli_cmd_fbmem, serial_string_char, vga);}
+        else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
     }
