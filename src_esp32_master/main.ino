@@ -1,6 +1,7 @@
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
+#include <SPI.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -22,6 +23,8 @@ const int PIN_B = 27;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
 
+SPIClass main_spi(HSPI);
+
 uint8_t connected_slaves = 0;
 
 char line_separator[64] = "---------------------------------------------------------------";
@@ -36,6 +39,12 @@ void (*reset)(void) = 0;
 byte get_clock_speed_cpu_mhz() {
 
     return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
+}
+
+void spi_init() {
+
+    main_spi.begin();
+    main_spi.setClockDivider(SPI_CLOCK_DIV4);
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -140,6 +149,29 @@ int cli_cmd_lsdev(char full_command[MAX_CLI_INPUT_LENGTH]) {
     for (int i = 0; i < connected_slaves; i++) {
 
         // find information about the slave and print it
+    }
+
+    return 0;
+}
+
+int cli_cmd_spi(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    String command_string = full_command;
+
+    if (command_string.substring(4, 4 + 4).equals("init")) {
+
+        spi_init();
+
+        scroll_terminal(1);
+
+        vga.println("SPI SUCCESSFULLY INITIALIZED WITHOUT AN ERROR");
+
+    } else {
+
+        scroll_terminal(2);
+
+        vga.println("UNKNOWN SPI COMMAND. COMMANDS ARE:");
+        vga.println("spi init - INITIALIZES THE SPI INTERFACE");
     }
 
     return 0;
@@ -277,6 +309,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 3).equals("spi")) {cli_output(&cli_cmd_spi, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
