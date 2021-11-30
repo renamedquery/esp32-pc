@@ -1,5 +1,6 @@
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
+#include <soc/rtc.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -9,6 +10,7 @@
 #define SCREEN_SIZE (SCREEN_WIDTH*SCREEN_HEIGHT)
 #define CLI_LINE_HEIGHT 16
 #define SCREEN_BITDEPTH 3
+#define MAX_BYTES (520*8*1000)
 
 VGA3Bit vga;
 
@@ -22,7 +24,6 @@ const int PIN_HSYNC = 32;
 
 uint8_t connected_slaves = 0;
 
-char pin_info[64] = "";
 char line_separator[64] = "---------------------------------------------------------------";
 
 void scroll_terminal(int lines) {
@@ -31,6 +32,11 @@ void scroll_terminal(int lines) {
 }
 
 void (*reset)(void) = 0;
+
+byte get_clock_speed_cpu_mhz() {
+
+    return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
+}
 
 // ----------------------------------------------------------------------------------------------------------
 // terminal functions below
@@ -83,14 +89,18 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
     char hwinfo_line3[MAX_CLI_OUTPUT_LENGTH] = "";
     char hwinfo_line4[MAX_CLI_OUTPUT_LENGTH] = "";
     char hwinfo_line5[MAX_CLI_OUTPUT_LENGTH] = "";
+    char hwinfo_line6[MAX_CLI_OUTPUT_LENGTH] = "";
+    char hwinfo_line7[MAX_CLI_OUTPUT_LENGTH] = "";
     
     sprintf(hwinfo_line1, "    RED COLOR PIN: %d", PIN_R);
     sprintf(hwinfo_line2, "    GREEN COLOR PIN: %d", PIN_G);
     sprintf(hwinfo_line3, "    BLUE COLOR PIN: %d", PIN_B);
     sprintf(hwinfo_line4, "    VERTICAL SYNC PIN: %d", PIN_VSYNC);
     sprintf(hwinfo_line5, "    HORIZONTAL SYNC PIN: %d", PIN_HSYNC);
+    sprintf(hwinfo_line6, "    MAX BYTES: %d", MAX_BYTES);
+    sprintf(hwinfo_line7, "    CURRENT CLOCK SPEED: %dMHz", get_clock_speed_cpu_mhz());
 
-    scroll_terminal(6);
+    scroll_terminal(8);
 
     vga.println("HARDWARE INFORMATION");
     vga.println(hwinfo_line1);
@@ -98,6 +108,8 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println(hwinfo_line3);
     vga.println(hwinfo_line4);
     vga.println(hwinfo_line5);
+    vga.println(hwinfo_line6);
+    vga.println(hwinfo_line7);
 
     return 0;
 }
@@ -205,11 +217,15 @@ void setup() {
     vga.setFont(CodePage437_9x16);
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
 
+    char pin_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
+
+    char clock_speed[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    sprintf(clock_speed, "%dMHz CLOCK SPEED", get_clock_speed_cpu_mhz());
 
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
-    vga.println("80MHZ CLOCK SPEED");
+    vga.println(clock_speed);
     vga.println("640X400 PIXELS TOTAL");
     vga.println("3 BIT VGA");
     vga.println("");
