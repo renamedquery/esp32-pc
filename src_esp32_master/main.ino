@@ -28,6 +28,8 @@ void scroll_terminal(int lines) {
     for (int i = 0; i < lines; i++) vga.scroll(CLI_LINE_HEIGHT, vga.RGB(0, 0, 0));
 }
 
+void (*reset)(void) = 0;
+
 // ----------------------------------------------------------------------------------------------------------
 // terminal functions below
 // should return 0 upon success
@@ -214,6 +216,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char);} 
+        else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
     }
 }
