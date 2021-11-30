@@ -2,12 +2,14 @@
 #include <Ressources/CodePage437_9x16.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
-#define MAX_CLI_OUTPUT_LENGTH 64
+#define MAX_CLI_OUTPUT_LENGTH 128
+#define MAX_CLI_OUTPUT_LENGTH_PER_LINE 64
 #define SCREEN_WIDTH 680
 #define SCREEN_HEIGHT 480
 #define SCREEN_SIZE (SCREEN_WIDTH*SCREEN_HEIGHT)
 #define CLI_LINE_HEIGHT 16
 #define SCREEN_BITDEPTH 3
+#define HELP_MENU_LENGTH 3
 
 VGA3Bit vga;
 
@@ -16,6 +18,12 @@ const int PIN_G = 26;
 const int PIN_B = 27;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
+
+char help_menu[HELP_MENU_LENGTH][MAX_CLI_OUTPUT_LENGTH] = {
+    "fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER",
+    "fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS RESOLUTION AND BIT DEPTH",
+    "hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED TO WHAT FUNCTION"
+};
 
 char pin_info[64] = "";
 char line_separator[64] = "---------------------------------------------------------------";
@@ -141,6 +149,25 @@ void loop() {
             vga.println(hwinfo_line3);
             vga.println(hwinfo_line4);
             vga.println(hwinfo_line5);
+
+        } else if (serial_string.substring(0, 4).equals("help")) {
+
+            for (int i = 0; i < HELP_MENU_LENGTH; i++) {
+
+                String help_menu_string = help_menu[i];
+
+                for (int j = 0; j < MAX_CLI_OUTPUT_LENGTH; j += MAX_CLI_OUTPUT_LENGTH_PER_LINE) {
+
+                    if (!(help_menu_string.substring(j, j + MAX_CLI_OUTPUT_LENGTH_PER_LINE).isEmpty())) {
+
+                        char help_menu_line[MAX_CLI_OUTPUT_LENGTH_PER_LINE];
+                        help_menu_string.substring(j, j + MAX_CLI_OUTPUT_LENGTH_PER_LINE).toCharArray(help_menu_line, MAX_CLI_OUTPUT_LENGTH_PER_LINE + 1);
+
+                        scroll_terminal(1);
+                        vga.println(help_menu_line);
+                    }
+                }
+            }
 
         } else {
 
