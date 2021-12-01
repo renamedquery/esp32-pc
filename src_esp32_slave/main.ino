@@ -1,15 +1,12 @@
-#define BLUETOOTH_SERIAL_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
+#define WIFI_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
+#define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
 #define LED_PIN 27
 
-#include <BluetoothSerial.h>
-
-BluetoothSerial SerialBT;
+#include <WiFi.h>
 
 void setup() {
     
     Serial.begin(9600);
-
-    SerialBT.connect(BLUETOOTH_SERIAL_NAME);
 
     pinMode(LED_PIN, OUTPUT);
 
@@ -17,13 +14,6 @@ void setup() {
 }
 
 void loop() {
-
-    while (SerialBT.available()) {
-
-        SerialBT.read();
-
-        digitalWrite(LED_PIN, HIGH);
-    }
 
     digitalWrite(LED_PIN, LOW);
 }

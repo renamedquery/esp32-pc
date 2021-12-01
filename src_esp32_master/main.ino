@@ -14,11 +14,18 @@
 #define CLI_LINE_HEIGHT 16
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
-#define SLAVE_COUNT 2
+#define SLAVE_COUNT 5
 #define WIFI_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
 #define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
+#define TCP_SERVER_PORT 23
+
+WiFiServer wifi_server(TCP_SERVER_PORT);
+WiFiClient remote_clients[SLAVE_COUNT];
 
 VGA3BitI vga;
+
+// its okay if this overflows, as long as we can %2 it then itll work
+int loop_index = 0;
 
 typedef int (*cli_function)(char[MAX_CLI_INPUT_LENGTH]);
 
@@ -42,6 +49,23 @@ void (*reset)(void) = 0;
 byte get_clock_speed_cpu_mhz() {
 
     return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
+}
+
+void wifi_check_incoming_connections() {
+
+    if (wifi_server.hasClient()) {
+
+        if (!remote_clients[connected_slaves].connected()) {
+
+            remote_clients[connected_slaves] = wifi_server.available();
+
+            connected_slaves++;
+
+            scroll_terminal(1);
+
+            vga.println("REMOTE CLIENT CONNECTED TO LOCAL NETWORK");
+        }
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -167,7 +191,13 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     } else if (command_string.substring(7, 7 + 7).equals("test_wf")) {
 
-        // send test string
+        for (int i = 0; i < connected_slaves; i++) {
+
+            if (remote_clients[i].connected()) {
+
+                remote_clients[i].println("TEST DATA FROM MASTER DEVICE");
+            }
+        }
 
         scroll_terminal(1);
 
@@ -273,6 +303,8 @@ void setup() {
     WiFi.mode(WIFI_STA);
     WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
 
+    wifi_server.begin();
+
     Serial.begin(9600);
 
     vga.init(vga.MODE640x350, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
@@ -342,4 +374,8 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
     }
+
+    if (loop_index % 10 == 0) wifi_check_incoming_connections();
+
+    loop_index++;
 }
