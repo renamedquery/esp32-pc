@@ -6,6 +6,10 @@ https://user-images.githubusercontent.com/38505228/143976371-19a70a72-b58a-4c94-
 
 *The ESP32 now has a display output, and has a terminal that supports RGB colors. Created using the ESP32LIB VGA driver.*
 
+![](https://user-images.githubusercontent.com/38505228/144167428-088d1632-fae3-4c4d-85c9-6f3da6e88e04.jpg)
+
+*The (totally tidy) breadboard setup.*
+
 ### Specs:
 
 - 520KB RAM
