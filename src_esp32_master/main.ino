@@ -4,7 +4,6 @@
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
 #include <WiFi.h>
-#include <esp_now.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -20,7 +19,6 @@
 #define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
 #define TCP_SERVER_PORT 23
 
-WiFiServer wifi_server(TCP_SERVER_PORT);
 WiFiClient remote_clients[SLAVE_COUNT];
 
 VGA3BitI vga;
@@ -50,21 +48,6 @@ void (*reset)(void) = 0;
 byte get_clock_speed_cpu_mhz() {
 
     return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
-}
-
-void wifi_check_incoming_connections() {
-
-    remote_clients[connected_slaves] = wifi_server.available();
-
-    if (remote_clients[connected_slaves]) {
-
-        if (remote_clients[connected_slaves].connected()) {
-
-            scroll_terminal(1);
-
-            vga.println("EXTERNAL CLIENT CONNECTED TO WIFI NETWORK");
-        }
-    }
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -299,10 +282,8 @@ void cli_nocmd() {
 
 void setup() {
 
-    WiFi.mode(WIFI_STA);
+    WiFi.mode(WIFI_AP);
     WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
-
-    wifi_server.begin();
 
     Serial.begin(9600);
 
@@ -373,8 +354,6 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
     }
-
-    if (loop_index % 10 == 0) wifi_check_incoming_connections();
 
     loop_index++;
 }
