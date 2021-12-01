@@ -346,8 +346,15 @@ int cli_cmd_touch(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     if (SD.exists(current_sd_path + "/" + filename)) return 2;
 
-    File new_file = SD.open(current_sd_path + "/" + filename, "w");
-    new_file.close();
+    try {
+
+        File new_file = SD.open(current_sd_path + "/" + filename, "w");
+        new_file.close();
+    
+    } catch (...) {
+
+        return 3;
+    }
 
     char touch_output_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
