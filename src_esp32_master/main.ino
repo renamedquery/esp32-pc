@@ -33,6 +33,8 @@
 #define PIN_VSYNC 33
 #define PIN_HSYNC 32
 
+unsigned long boot_start_time = millis();
+
 WiFiClient remote_clients[SLAVE_COUNT];
 
 VGA3BitI vga;
@@ -539,7 +541,10 @@ void setup() {
 
     vga.println("USING ESP32LIB VGA DRIVER WRITTEN BY BITLUNI");
     vga.println("MAIN PROGRAM WRITTEN BY KATZNBOYZ");
-    vga.println("");
+    vga.print("REPORT ISSUES TO ");
+    vga.setTextColor(vga.RGB(0, 0, 255), vga.RGB(0, 0, 0));
+    vga.println("https://github.com/katznboyz1/esp32-pc");
+    vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
 
     vga.setTextColor(vga.RGB(255, 0, 0), vga.RGB(0, 0, 0));
     vga.println("RED COLOR TEST");
@@ -548,7 +553,12 @@ void setup() {
     vga.setTextColor(vga.RGB(0, 0, 255), vga.RGB(0, 0, 0));
     vga.println("BLUE COLOR TEST");
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
-    vga.println("");
+
+    unsigned long boot_to_current_time = (millis() - boot_start_time);
+    char boot_time_info[MAX_CLI_INPUT_LENGTH] = "";
+    sprintf(boot_time_info, "BOOTING TOOK %luMS", boot_to_current_time);
+    
+    vga.println(boot_time_info);
 
     vga.println("DONE BOOTING");
 
