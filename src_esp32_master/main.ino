@@ -286,7 +286,7 @@ void cli_nocmd() {
 void setup() {
 
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
+    bool softap_start_status = WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
 
     Serial.begin(9600);
 
@@ -301,13 +301,15 @@ void setup() {
     char clock_speed[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(clock_speed, "%dMHz CLOCK SPEED", get_clock_speed_cpu_mhz());
 
+    char softap_start_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    sprintf(softap_start_info, "SOFTAP STATUS %d", (byte)softap_start_status);
+
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
     vga.println(clock_speed);
     vga.println("640X350 PIXELS TOTAL");
     vga.println("3 BIT VGA");
-    vga.println("");
-
+    vga.println(softap_start_status);
     vga.println(pin_info);
     vga.println("");
 
