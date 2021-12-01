@@ -141,7 +141,7 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(10);
+    scroll_terminal(11);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
@@ -152,6 +152,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("df - PRINTS THE AVAILABLE DISK DRIVES AND THEIR INFORMATION");
     vga.println("sd <cmd> - EXECUTES A COMMAND IN RELATION TO THE SD CARD SLOT");
     vga.println("mkdir <path> - CREATES A NEW DIRECTORY");
+    vga.println("ls - LISTS ALL FILES/FOLDERS IN THE CURRENT DIRECTORY");
 
     return 0;
 }
@@ -317,6 +318,30 @@ int cli_cmd_mkdir(char full_command[MAX_CLI_INPUT_LENGTH]) {
     scroll_terminal(1);
 
     vga.println(mkdir_output_info);
+
+    return 0;
+}
+
+int cli_cmd_ls(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    File directory_contents = SD.open(current_sd_path);
+
+    while (1) {
+
+        File current_listed_file = directory_contents.openNextFile();
+
+        if (!current_listed_file) break;
+
+        if (current_listed_file.isDirectory()) vga.setTextColor(vga.RGB(0, 0, 255), vga.RGB(0, 0, 0));
+
+        scroll_terminal(1);
+
+        vga.println(current_listed_file.name());
+
+        vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
+    }
+
+    directory_contents.close();
 
     return 0;
 }
@@ -505,6 +530,7 @@ void loop() {
         else if (serial_string.substring(0, 3).equals("net")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("df")) {cli_output(&cli_cmd_df, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("sd")) {cli_output(&cli_cmd_sd, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 2).equals("ls")) {cli_output(&cli_cmd_ls, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
