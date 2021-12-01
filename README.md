@@ -20,7 +20,7 @@ https://user-images.githubusercontent.com/38505228/143976371-19a70a72-b58a-4c94-
 - 448KB ROM
 - 240MHz processor clock speed
 - 3 bit VGA colors (RGB)
-- 640x480 output resolution
+- 640x350 output resolution
 - 6 physical ESP32 devices
 
 ### Why am I doing this?
