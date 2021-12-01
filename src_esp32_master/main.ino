@@ -135,7 +135,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("hwinfo - PRINTS THE INFORMATION ABOUT WHICH PINS ARE ASSIGNED");
     vga.println("         TO WHAT FUNCTION");
     vga.println("lsdev - PRINTS A LIST OF THE CONNECTED SLAVE DEVICES");
-    vga.println("serial <cmd> - EXECUTES AN ACTION ON THE SERIAL INTERFACE");
+    vga.println("net <cmd> - EXECUTES AN ACTION ON THE WIFI INTERFACE");
 
     return 0;
 }
@@ -159,7 +159,9 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
 
-    if (command_string.substring(7, 7 + 7).equals("name_wf")) {
+    const int end_of_first_command = 4;
+
+    if (command_string.substring(end_of_first_command, end_of_first_command + 4).equals("name")) {
 
         scroll_terminal(4);
 
@@ -168,7 +170,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
         vga.println(WiFi.softAPIPv6().toString().c_str());
         vga.println(WiFi.macAddress().c_str());
 
-    } else if (command_string.substring(7, 7 + 7).equals("test_wf")) {
+    } else if (command_string.substring(end_of_first_command, end_of_first_command + 4).equals("test")) {
 
         for (int i = 0; i < connected_slaves; i++) {
 
@@ -182,7 +184,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         vga.println("SENT TEST STRING TO SLAVE DEVICES VIA WIFI");
 
-    } else if (command_string.substring(7, 7 + 7).equals("stop_wf")) {
+    } else if (command_string.substring(end_of_first_command, end_of_first_command + 4).equals("stop")) {
 
         WiFi.softAPdisconnect(true);
 
@@ -190,7 +192,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         vga.println("DISABLED WIFI SERIAL INTERFACE");
 
-    } else if (command_string.substring(7, 7 + 8).equals("start_wf")) {
+    } else if (command_string.substring(end_of_first_command, end_of_first_command + 5).equals("start")) {
 
         WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
 
@@ -198,16 +200,21 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         vga.println("STARTED WIFI SERIAL INTERFACE");
 
+    } else if (command_string.substring(end_of_first_command, end_of_first_command + 4).equals("list")) {
+
+        cli_cmd_lsdev(full_command);
+
     } else {
 
-        scroll_terminal(6);
+        scroll_terminal(7);
 
-        vga.println("UNKNOWN SERIAL COMMAND. VALID COMMANDS ARE:");
-        vga.println("serial name_wf - PRINTS THE NAME OF THE WIFI INTERFACE");
-        vga.println("serial test_wf - SENDS OUT A TEST MESSAGE TO ALL WIFI");
+        vga.println("UNKNOWN NET COMMAND. VALID COMMANDS ARE:");
+        vga.println("net name - PRINTS THE NAME OF THE WIFI INTERFACE");
+        vga.println("net test - SENDS OUT A TEST MESSAGE TO ALL WIFI");
         vga.println("                 SERIAL DEVICES");
-        vga.println("serial stop_wf - STOPS THE WIFI SERIAL INTERFACE");
-        vga.println("serial start_wf - STARTS THE WIFI SERIAL INTERFACE");
+        vga.println("net stop - STOPS THE WIFI SERIAL INTERFACE");
+        vga.println("net start - STARTS THE WIFI SERIAL INTERFACE");
+        vga.println("net list - LISTS ALL CONNECTED SLAVE DEVICES");
     }
 
     return 0;
@@ -344,7 +351,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("fbinfo")) {cli_output(&cli_cmd_fbinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
-        else if (serial_string.substring(0, 6).equals("serial")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 3).equals("net")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
