@@ -272,7 +272,7 @@ int cli_cmd_df(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     char sd_card_filesystem_description[MAX_CLI_OUTPUT_LENGTH_PER_LINE];
 
-    sprintf(sd_card_filesystem_description, "%s    %dB TOTAL    %dB USED", SD_FILESYSTEM_ROOT, SD.totalBytes(), SD.usedBytes());
+    sprintf(sd_card_filesystem_description, "%s    %lluB TOTAL    %lluB USED", SD_FILESYSTEM_ROOT, SD.totalBytes(), SD.usedBytes());
 
     scroll_terminal(1);
 
