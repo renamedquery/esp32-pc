@@ -221,7 +221,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     } else {
 
-        scroll_terminal(5);
+        scroll_terminal(6);
 
         vga.println("UNKNOWN SERIAL COMMAND. COMMANDS ARE:");
         vga.println("serial name_wf - PRINTS THE NAME OF THE WIFI INTERFACE");
