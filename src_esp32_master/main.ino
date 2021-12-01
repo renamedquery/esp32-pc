@@ -4,6 +4,7 @@
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
 #include <WiFi.h>
+#include <esp_now.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -53,17 +54,15 @@ byte get_clock_speed_cpu_mhz() {
 
 void wifi_check_incoming_connections() {
 
-    if (wifi_server.hasClient()) {
+    remote_clients[connected_slaves] = wifi_server.available();
 
-        if (!remote_clients[connected_slaves].connected()) {
+    if (remote_clients[connected_slaves]) {
 
-            remote_clients[connected_slaves] = wifi_server.available();
-
-            connected_slaves++;
+        if (remote_clients[connected_slaves].connected()) {
 
             scroll_terminal(1);
 
-            vga.println("REMOTE CLIENT CONNECTED TO LOCAL NETWORK");
+            vga.println("EXTERNAL CLIENT CONNECTED TO WIFI NETWORK");
         }
     }
 }
