@@ -10,6 +10,10 @@ https://user-images.githubusercontent.com/38505228/143976371-19a70a72-b58a-4c94-
 
 *The (totally tidy) breadboard setup.*
 
+![](https://user-images.githubusercontent.com/38505228/144167768-6ab12674-4b4f-439d-9db3-7ddacf9731bb.jpg)
+
+*I was able to get 5 devices synced to the master device over WiFi.*
+
 ### Specs:
 
 - 520KB RAM
