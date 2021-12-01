@@ -17,7 +17,7 @@
 #define SLAVE_COUNT 5
 #define WIFI_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
 #define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
-#define TCP_SERVER_PORT 23
+#define AP_MAX_CONNECTIONS 5
 
 WiFiClient remote_clients[SLAVE_COUNT];
 
@@ -144,16 +144,13 @@ int cli_cmd_lsdev(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     char amount_of_slave_devices_text[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
-    sprintf(amount_of_slave_devices_text, "LISTING %d CONNECTED SLAVE DEVICES:", connected_slaves);
+    connected_slaves = WiFi.softAPgetStationNum();
+
+    sprintf(amount_of_slave_devices_text, "LISTING %d CONNECTED SLAVE DEVICES", connected_slaves);
 
     scroll_terminal(1);
 
     vga.println(amount_of_slave_devices_text);
-
-    for (int i = 0; i < connected_slaves; i++) {
-
-        // find information about the slave and print it
-    }
 
     return 0;
 }
@@ -187,7 +184,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     } else if (command_string.substring(7, 7 + 7).equals("stop_wf")) {
 
-        WiFi.disconnect(true, true);
+        WiFi.softAPdisconnect(true);
 
         scroll_terminal(1);
 
@@ -195,7 +192,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     } else if (command_string.substring(7, 7 + 8).equals("start_wf")) {
 
-        WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
+        WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
 
         scroll_terminal(1);
 
@@ -283,7 +280,7 @@ void cli_nocmd() {
 void setup() {
 
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
+    WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
 
     Serial.begin(9600);
 
