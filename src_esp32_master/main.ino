@@ -309,7 +309,7 @@ void setup() {
     vga.println(clock_speed);
     vga.println("640X350 PIXELS TOTAL");
     vga.println("3 BIT VGA");
-    vga.println(softap_start_status);
+    vga.println(softap_start_info);
     vga.println(pin_info);
     vga.println("");
 
