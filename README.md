@@ -2,17 +2,13 @@
 
 ### This repo is currently a work in progress. I am currently working on the ESP32's command line.
 
-https://user-images.githubusercontent.com/38505228/143976371-19a70a72-b58a-4c94-bc6f-ca3379a1ca97.mp4
+![](https://user-images.githubusercontent.com/38505228/144286217-e8ea7b19-0e0b-4687-ab5d-cb779d342483.jpg)
 
-*The ESP32 now has a display output, and has a terminal that supports RGB colors. Created using the ESP32LIB VGA driver.*
+*Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem (the `DF` command I wrote is still in it's early stages, so it reads the wrong values).*
 
-![](https://user-images.githubusercontent.com/38505228/144167428-088d1632-fae3-4c4d-85c9-6f3da6e88e04.jpg)
+![](https://user-images.githubusercontent.com/38505228/144286600-0376f26c-2630-45b0-bb09-f7fb35e8bbb3.jpg)
 
-*The (totally tidy) breadboard setup.*
-
-![](https://user-images.githubusercontent.com/38505228/144167768-6ab12674-4b4f-439d-9db3-7ddacf9731bb.jpg)
-
-*I was able to get 5 devices synced to the master device over WiFi.*
+*I call it, "The Signal Integrity House of Horrors".*
 
 ### Specs:
 
