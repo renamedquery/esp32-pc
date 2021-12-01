@@ -25,6 +25,7 @@
 #define SD_MISO 19
 #define SD_MOSI 23
 #define SD_SS 5
+#define SD_FILESYSTEM_ROOT "/sd"
 
 WiFiClient remote_clients[SLAVE_COUNT];
 
@@ -137,7 +138,7 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(7);
+    scroll_terminal(8);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
@@ -145,6 +146,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("         TO WHAT FUNCTION");
     vga.println("lsdev - PRINTS A LIST OF THE CONNECTED SLAVE DEVICES");
     vga.println("net <cmd> - EXECUTES AN ACTION ON THE WIFI INTERFACE");
+    vga.println("df - PRINTS THE AVAILABLE DISK DRIVES AND THEIR INFORMATION");
 
     return 0;
 }
@@ -247,6 +249,19 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
         vga.println("net start - STARTS THE WIFI SERIAL INTERFACE");
         vga.println("net list - LISTS ALL CONNECTED SLAVE DEVICES");
     }
+
+    return 0;
+}
+
+int cli_cmd_df(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    char sd_card_filesystem_description[MAX_CLI_OUTPUT_LENGTH_PER_LINE];
+
+    sprintf(sd_card_filesystem_description, "%s    %dB TOTAL    %dB USED", SD_FILESYSTEM_ROOT, SD.totalBytes(), SD.usedBytes());
+
+    scroll_terminal(1);
+
+    vga.println(sd_card_filesystem_description);
 
     return 0;
 }
@@ -393,6 +408,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("net")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 2).equals("df")) {cli_output(&cli_cmd_df, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
