@@ -313,7 +313,7 @@ int cli_cmd_mkdir(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     char mkdir_output_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
-    sprintf(mkdir_output_info, "CREATED DIR %s", current_sd_path + "/" + dirname);
+    sprintf(mkdir_output_info, "CREATED DIR %s", (current_sd_path + "/" + dirname).c_str());
 
     scroll_terminal(1);
 
