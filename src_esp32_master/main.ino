@@ -206,12 +206,11 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     } else {
 
-        scroll_terminal(7);
+        scroll_terminal(6);
 
         vga.println("UNKNOWN NET COMMAND. VALID COMMANDS ARE:");
         vga.println("net name - PRINTS THE NAME OF THE WIFI INTERFACE");
-        vga.println("net test - SENDS OUT A TEST MESSAGE TO ALL WIFI");
-        vga.println("                 SERIAL DEVICES");
+        vga.println("net test - SENDS OUT A TEST MESSAGE TO ALL WIFI SERIAL DEVICES");
         vga.println("net stop - STOPS THE WIFI SERIAL INTERFACE");
         vga.println("net start - STARTS THE WIFI SERIAL INTERFACE");
         vga.println("net list - LISTS ALL CONNECTED SLAVE DEVICES");
