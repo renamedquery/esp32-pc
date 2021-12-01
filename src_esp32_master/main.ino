@@ -181,7 +181,7 @@ int cli_cmd_lsdev(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         char station_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
 
-        sprintf(station_info, "DEV_%d %d:%d:%d:%d:%d:%d/%s", i, station.mac[0], station.mac[1], station.mac[2], station.mac[3], station.mac[4], station.mac[5], ip4addr_ntoa(&(station.ip)));
+        sprintf(station_info, "DEV_%d     %d:%d:%d:%d:%d:%d    %s", i, station.mac[0], station.mac[1], station.mac[2], station.mac[3], station.mac[4], station.mac[5], ip4addr_ntoa(&(station.ip)));
 
         scroll_terminal(1);
 
