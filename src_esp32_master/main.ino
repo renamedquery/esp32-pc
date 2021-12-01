@@ -3,7 +3,7 @@
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
-#include <BluetoothSerial.h>
+#include <WiFi.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -15,9 +15,8 @@
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
 #define SLAVE_COUNT 2
-#define BLUETOOTH_SERIAL_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
-
-BluetoothSerial SerialBT;
+#define WIFI_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
+#define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
 
 VGA3BitI vga;
 
@@ -157,46 +156,49 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
 
-    if (command_string.substring(7, 7 + 7).equals("name_bt")) {
+    if (command_string.substring(7, 7 + 7).equals("name_wf")) {
+
+        scroll_terminal(4);
+
+        vga.println(WIFI_NAME);
+        vga.println(WiFi.softAPIP().toString().c_str());
+        vga.println(WiFi.softAPIPv6().toString().c_str());
+        vga.println(WiFi.macAddress().c_str());
+
+    } else if (command_string.substring(7, 7 + 7).equals("test_wf")) {
+
+        // send test string
 
         scroll_terminal(1);
 
-        vga.println(BLUETOOTH_SERIAL_NAME);
+        vga.println("SENT TEST STRING TO SLAVE DEVICES VIA WIFI");
 
-    } else if (command_string.substring(7, 7 + 7).equals("test_bt")) {
+    } else if (command_string.substring(7, 7 + 7).equals("stop_wf")) {
 
-        SerialBT.println("TEST STRING SENT FROM MASTER DEVICE");
-
-        scroll_terminal(1);
-
-        vga.println("SENT TEST STRING TO SLAVE DEVICES VIA BLUETOOTH SERIAL");
-
-    } else if (command_string.substring(7, 7 + 7).equals("stop_bt")) {
-
-        SerialBT.end();
+        WiFi.disconnect(true, true);
 
         scroll_terminal(1);
 
-        vga.println("DISABLED BLUETOOTH SERIAL INTERFACE");
+        vga.println("DISABLED WIFI SERIAL INTERFACE");
 
-    } else if (command_string.substring(7, 7 + 8).equals("start_bt")) {
+    } else if (command_string.substring(7, 7 + 8).equals("start_wf")) {
 
-        SerialBT.begin(BLUETOOTH_SERIAL_NAME);
+        WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
 
         scroll_terminal(1);
 
-        vga.println("STARTED BLUETOOTH SERIAL INTERFACE");
+        vga.println("STARTED WIFI SERIAL INTERFACE");
 
     } else {
 
         scroll_terminal(5);
 
         vga.println("UNKNOWN SERIAL COMMAND. COMMANDS ARE:");
-        vga.println("serial name_bt - PRINTS THE NAME OF THE BLUETOOTH INTERFACE");
-        vga.println("serial test_bt - SENDS OUT A TEST MESSAGE TO ALL BLUETOOTH");
+        vga.println("serial name_wf - PRINTS THE NAME OF THE WIFI INTERFACE");
+        vga.println("serial test_wf - SENDS OUT A TEST MESSAGE TO ALL WIFI");
         vga.println("                 SERIAL DEVICES");
-        vga.println("serial stop_bt - STOPS THE BLUETOOTH SERIAL INTERFACE");
-        vga.println("serial start_bt - STARTS THE BLUETOOTH SERIAL INTERFACE");
+        vga.println("serial stop_wf - STOPS THE WIFI SERIAL INTERFACE");
+        vga.println("serial start_wf - STARTS THE WIFI SERIAL INTERFACE");
     }
 
     return 0;
@@ -268,7 +270,8 @@ void cli_nocmd() {
 
 void setup() {
 
-    SerialBT.begin(BLUETOOTH_SERIAL_NAME);
+    WiFi.mode(WIFI_STA);
+    WiFi.softAP(WIFI_NAME, WIFI_PASSWORD);
 
     Serial.begin(9600);
 
