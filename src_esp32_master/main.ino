@@ -327,6 +327,7 @@ int cli_cmd_mkdir(char full_command[MAX_CLI_INPUT_LENGTH]) {
 /*
     known issues:
     - touching a file starting with a period will crash the OS
+    - touching a file with the same name as a directory will fail with error code 2
 */
 int cli_cmd_touch(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
