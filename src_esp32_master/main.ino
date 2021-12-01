@@ -34,6 +34,8 @@ VGA3BitI vga;
 
 SPIClass *spi = NULL;
 
+String current_sd_path = "/";
+
 // its okay if this overflows, as long as we can %2 it then itll work
 int loop_index = 0;
 
@@ -149,6 +151,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("net <cmd> - EXECUTES AN ACTION ON THE WIFI INTERFACE");
     vga.println("df - PRINTS THE AVAILABLE DISK DRIVES AND THEIR INFORMATION");
     vga.println("sd <cmd> - EXECUTES A COMMAND IN RELATION TO THE SD CARD SLOT");
+    vga.println("mkdir <path> - CREATES A NEW DIRECTORY");
 
     return 0;
 }
@@ -277,6 +280,43 @@ int cli_cmd_df(char full_command[MAX_CLI_INPUT_LENGTH]) {
     scroll_terminal(1);
 
     vga.println(sd_card_filesystem_description);
+
+    return 0;
+}
+
+int cli_cmd_mkdir(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    String command_string = full_command;
+
+    const int end_of_first_command = 6;
+
+    String dirname = "";
+
+    for (int i = end_of_first_command; i < MAX_CLI_INPUT_LENGTH; i++) {
+
+        if (command_string.substring(i, i + 1).isEmpty()) {
+
+            break;
+
+        } else {
+
+            dirname += command_string.substring(i, i + 1);
+        }
+    }
+
+    if (dirname.isEmpty()) return 1;
+
+    bool mkdir_status = SD.mkdir(current_sd_path + "/" + dirname);
+
+    if (!mkdir_status) return 2;
+
+    char mkdir_output_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+
+    sprintf(mkdir_output_info, "CREATED DIR %s", current_sd_path + "/" + dirname);
+
+    scroll_terminal(1);
+
+    vga.println(mkdir_output_info);
 
     return 0;
 }
@@ -465,6 +505,7 @@ void loop() {
         else if (serial_string.substring(0, 3).equals("net")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("df")) {cli_output(&cli_cmd_df, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("sd")) {cli_output(&cli_cmd_sd, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
