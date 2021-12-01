@@ -5,6 +5,8 @@
 #include <soc/rtc.h>
 #include <WiFi.h>
 #include <esp_wifi.h>
+#include <SD.h>
+#include <SPI.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -19,10 +21,16 @@
 #define WIFI_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
 #define WIFI_PASSWORD "YOUR PASSWORD GOES HERE"
 #define AP_MAX_CONNECTIONS 5
+#define SD_SCLK 18
+#define SD_MISO 19
+#define SD_MOSI 23
+#define SD_SS 5
 
 WiFiClient remote_clients[SLAVE_COUNT];
 
 VGA3BitI vga;
+
+SPIClass *spi = NULL;
 
 // its okay if this overflows, as long as we can %2 it then itll work
 int loop_index = 0;
@@ -309,10 +317,15 @@ void cli_nocmd() {
 
 void setup() {
 
+    spi = new SPIClass(VSPI);
+    spi->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_SS);
+
     WiFi.mode(WIFI_AP);
     bool softap_start_status = WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
 
     Serial.begin(9600);
+
+    bool sd_start_status = SD.begin(SD_SS, *spi);
 
     vga.init(vga.MODE640x350, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
     vga.setFont(CodePage437_9x16);
@@ -328,6 +341,9 @@ void setup() {
     char softap_start_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(softap_start_info, "SOFTAP STATUS %d", (byte)softap_start_status);
 
+    char sd_start_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
+    sprintf(sd_start_info, "SD STATUS %d", (byte)sd_start_status);
+
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
     vga.println(clock_speed);
@@ -335,7 +351,7 @@ void setup() {
     vga.println("3 BIT VGA");
     vga.println(softap_start_info);
     vga.println(pin_info);
-    vga.println("");
+    vga.println(sd_start_info);
 
     vga.println("USING ESP32LIB VGA DRIVER WRITTEN BY BITLUNI");
     vga.println("MAIN PROGRAM WRITTEN BY KATZNBOYZ");
