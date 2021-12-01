@@ -322,6 +322,10 @@ int cli_cmd_mkdir(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
+/*
+    known issues:
+    - touching a file starting with a period will crash the OS
+*/
 int cli_cmd_touch(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
