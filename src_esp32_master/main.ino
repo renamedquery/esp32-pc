@@ -3,22 +3,23 @@
 #include <ESP32Lib.h>
 #include <Ressources/CodePage437_9x16.h>
 #include <soc/rtc.h>
-#include <SoftwareSerial.h> // https://github.com/plerup/espsoftwareserial
+#include <BluetoothSerial.h>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
 #define MAX_CLI_OUTPUT_LENGTH_PER_LINE 64
-#define SCREEN_WIDTH 680
-#define SCREEN_HEIGHT 480
+#define SCREEN_WIDTH 640
+#define SCREEN_HEIGHT 350
 #define SCREEN_SIZE (SCREEN_WIDTH*SCREEN_HEIGHT)
 #define CLI_LINE_HEIGHT 16
 #define SCREEN_BITDEPTH 3
 #define MAX_BYTES (520*8*1000)
-#define MAX_SPI_SEND_LENGTH 64
 #define SLAVE_COUNT 2
-#define SLAVE_SERIAL_BAUD_RATE 9600
+#define BLUETOOTH_SERIAL_NAME "ESP32_MASTER_COMPUTE_DEVICE_1"
 
-VGA3Bit vga;
+BluetoothSerial SerialBT;
+
+VGA3BitI vga;
 
 typedef int (*cli_function)(char[MAX_CLI_INPUT_LENGTH]);
 
@@ -27,15 +28,6 @@ const int PIN_G = 26;
 const int PIN_B = 25;
 const int PIN_VSYNC = 33;
 const int PIN_HSYNC = 32;
-
-// {rx, tx}
-const int SLAVE_SERIAL_PINS[SLAVE_COUNT][2] = {
-    {34, 35},
-    {36, 39}
-};
-
-SoftwareSerial slave_serial_1(SLAVE_SERIAL_PINS[0][0], SLAVE_SERIAL_PINS[0][1], false);
-SoftwareSerial slave_serial_2(SLAVE_SERIAL_PINS[1][0], SLAVE_SERIAL_PINS[1][1], false);
 
 uint8_t connected_slaves = 0;
 
@@ -51,25 +43,6 @@ void (*reset)(void) = 0;
 byte get_clock_speed_cpu_mhz() {
 
     return rtc_clk_cpu_freq_value(rtc_clk_cpu_freq_get()) / 1000 / 1000;
-}
-
-void serial_init() {
-
-    for (int i = 0; i < SLAVE_COUNT; i++) {
-
-        pinMode(SLAVE_SERIAL_PINS[i][0], INPUT);
-        pinMode(SLAVE_SERIAL_PINS[i][1], OUTPUT);
-
-        char software_serial_status[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
-        sprintf(software_serial_status, "SET PINMODE FOR RX=%d=INPUT TX=%d=OUTPUT", SLAVE_SERIAL_PINS[i][0], SLAVE_SERIAL_PINS[i][1]);
-
-        scroll_terminal(1);
-
-        vga.println(software_serial_status);
-    }
-
-    slave_serial_1.begin(SLAVE_SERIAL_BAUD_RATE);
-    slave_serial_2.begin(SLAVE_SERIAL_BAUD_RATE);
 }
 
 // ----------------------------------------------------------------------------------------------------------
@@ -184,31 +157,46 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
 
-    if (command_string.substring(7, 7 + 4).equals("init")) {
-
-        serial_init();
+    if (command_string.substring(7, 7 + 7).equals("name_bt")) {
 
         scroll_terminal(1);
 
-        vga.println("SERIAL SUCCESSFULLY INITIALIZED WITHOUT AN ERROR");
+        vga.println(BLUETOOTH_SERIAL_NAME);
 
-    } else if (command_string.substring(7, 7 + 4).equals("test")) {
+    } else if (command_string.substring(7, 7 + 7).equals("test_bt")) {
 
-        slave_serial_1.println("test message for slave device 1");
+        SerialBT.println("TEST STRING SENT FROM MASTER DEVICE");
+
         scroll_terminal(1);
-        vga.println("SUCCESSFULLY SENT A TEST MESSAGE SERIAL DEVICE 1");
 
-        slave_serial_2.println("test message for slave device 2");
+        vga.println("SENT TEST STRING TO SLAVE DEVICES VIA BLUETOOTH SERIAL");
+
+    } else if (command_string.substring(7, 7 + 7).equals("stop_bt")) {
+
+        SerialBT.end();
+
         scroll_terminal(1);
-        vga.println("SUCCESSFULLY SENT A TEST MESSAGE SERIAL DEVICE 2");
+
+        vga.println("DISABLED BLUETOOTH SERIAL INTERFACE");
+
+    } else if (command_string.substring(7, 7 + 8).equals("start_bt")) {
+
+        SerialBT.begin(BLUETOOTH_SERIAL_NAME);
+
+        scroll_terminal(1);
+
+        vga.println("STARTED BLUETOOTH SERIAL INTERFACE");
 
     } else {
 
-        scroll_terminal(3);
+        scroll_terminal(5);
 
         vga.println("UNKNOWN SERIAL COMMAND. COMMANDS ARE:");
-        vga.println("serial init - INITIALIZES THE SERIAL INTERFACE");
-        vga.println("serial test - SENDS OUT A TEST MESSAGE TO ALL SERIAL DEVICES");
+        vga.println("serial name_bt - PRINTS THE NAME OF THE BLUETOOTH INTERFACE");
+        vga.println("serial test_bt - SENDS OUT A TEST MESSAGE TO ALL BLUETOOTH");
+        vga.println("                 SERIAL DEVICES");
+        vga.println("serial stop_bt - STOPS THE BLUETOOTH SERIAL INTERFACE");
+        vga.println("serial start_bt - STARTS THE BLUETOOTH SERIAL INTERFACE");
     }
 
     return 0;
@@ -233,7 +221,7 @@ int cli_cmd_err(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
-void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH], VGA3Bit &vga_output) {
+void cli_output(cli_function function, char full_command[MAX_CLI_INPUT_LENGTH], VGA3BitI &vga_output) {
 
     try {
 
@@ -280,11 +268,14 @@ void cli_nocmd() {
 
 void setup() {
 
+    SerialBT.begin(BLUETOOTH_SERIAL_NAME);
+
     Serial.begin(9600);
 
-    vga.init(vga.MODE640x400, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
+    vga.init(vga.MODE640x350, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
     vga.setFont(CodePage437_9x16);
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
+    vga.setFrameBufferCount(1);
 
     char pin_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
@@ -295,7 +286,7 @@ void setup() {
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
     vga.println(clock_speed);
-    vga.println("640X400 PIXELS TOTAL");
+    vga.println("640X350 PIXELS TOTAL");
     vga.println("3 BIT VGA");
     vga.println("");
 
@@ -316,13 +307,8 @@ void setup() {
     vga.println("");
 
     vga.println("DONE BOOTING");
-    vga.println("");
 
     vga.println(line_separator);
-    vga.println("");
-
-    // so that the console input is on the bottom of the screen
-    vga.println("");
 
     Serial.println("SETUP IS DONE");
 }
