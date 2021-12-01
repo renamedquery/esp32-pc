@@ -26,6 +26,7 @@
 #define SD_MOSI 23
 #define SD_SS 5
 #define SD_FILESYSTEM_ROOT "/sd"
+#define SLAVE_RESET_PIN 21
 
 WiFiClient remote_clients[SLAVE_COUNT];
 
@@ -239,9 +240,21 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         cli_cmd_lsdev(full_command);
 
+    } else if (command_string.substring(end_of_first_command, end_of_first_command + 7).equals("restart")) {
+
+        digitalWrite(SLAVE_RESET_PIN, LOW);
+
+        delay(100);
+
+        digitalWrite(SLAVE_RESET_PIN, HIGH);
+
+        scroll_terminal(1);
+
+        vga.println("RESET ALL CONNECTED SLAVE DEVICES");
+
     } else {
 
-        scroll_terminal(6);
+        scroll_terminal(7);
 
         vga.println("UNKNOWN NET COMMAND. VALID COMMANDS ARE:");
         vga.println("net name - PRINTS THE NAME OF THE WIFI INTERFACE");
@@ -249,6 +262,7 @@ int cli_cmd_serial(char full_command[MAX_CLI_INPUT_LENGTH]) {
         vga.println("net stop - STOPS THE WIFI SERIAL INTERFACE");
         vga.println("net start - STARTS THE WIFI SERIAL INTERFACE");
         vga.println("net list - LISTS ALL CONNECTED SLAVE DEVICES");
+        vga.println("net restart - RESTARTS ALL CONNECTED SLAVE DEVICES");
     }
 
     return 0;
@@ -396,6 +410,9 @@ void setup() {
 
     char sd_start_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(sd_start_info, "SD STATUS %d", (byte)sd_start_status);
+
+    pinMode(SLAVE_RESET_PIN, OUTPUT);
+    digitalWrite(SLAVE_RESET_PIN, HIGH);
 
     vga.println("ESP-32S DEVELOPMENT BOARD");
     vga.println("520KB RAM BUILT IN/0KB EXTERNAL");
