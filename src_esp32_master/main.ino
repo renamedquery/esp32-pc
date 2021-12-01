@@ -27,6 +27,11 @@
 #define SD_SS 5
 #define SD_FILESYSTEM_ROOT "/sd"
 #define SLAVE_RESET_PIN 21
+#define PIN_R 27
+#define PIN_G 26
+#define PIN_B 25
+#define PIN_VSYNC 33
+#define PIN_HSYNC 32
 
 WiFiClient remote_clients[SLAVE_COUNT];
 
@@ -40,12 +45,6 @@ String current_sd_path = "/";
 int loop_index = 0;
 
 typedef int (*cli_function)(char[MAX_CLI_INPUT_LENGTH]);
-
-const int PIN_R = 27;
-const int PIN_G = 26;
-const int PIN_B = 25;
-const int PIN_VSYNC = 33;
-const int PIN_HSYNC = 32;
 
 uint8_t connected_slaves = 0;
 
