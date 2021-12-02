@@ -720,21 +720,26 @@ void loop() {
 
             //String current_img_res = image_to_draw.readStringUntil('\n');
 
-            int image_width, image_height;
+            int image_width, image_height, image_width_rescaled, image_height_rescaled;
 
             // tempoary values just to test things out
             // TODO: fix this
             image_height = 80; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
             image_width = 60; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
 
-            int x_aspect = SCREEN_WIDTH / image_width;
-            int y_aspect = SCREEN_HEIGHT / image_height;
+            const int image_scale = 2;
+
+            image_width_rescaled /= image_scale;
+            image_height_rescaled /= image_scale;
+
+            int x_aspect = SCREEN_WIDTH / image_width / image_scale;
+            int y_aspect = SCREEN_HEIGHT / image_height / image_scale;
 
             int x = 0;
             int y = 0;
 
-            int anchor_x = (SCREEN_WIDTH / 2) - (image_width / 2);
-            int anchor_y = (SCREEN_HEIGHT / 2) - (image_height / 2);
+            int anchor_x = (SCREEN_WIDTH / 2) - ((image_width_rescaled) / (2 * 1)) / 2;
+            int anchor_y = (SCREEN_HEIGHT / 2) - ((image_height_rescaled) / (2 * 1)) / 2;
 
             while (image_to_draw.available() > 0) {
 
@@ -750,7 +755,7 @@ void loop() {
 
                 bool current_pix_val_1bit = !((bool)(current_pix_value_str));
 
-                vga.fillRect(x * x_aspect, y * y_aspect, x_aspect, y_aspect * 2, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
+                vga.fillRect((x * x_aspect) + anchor_x, (y * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
             }
 
             image_to_draw.close();
