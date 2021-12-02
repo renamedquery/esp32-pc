@@ -153,7 +153,7 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(15);
+    scroll_terminal(16);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
@@ -169,6 +169,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("cd <absolute_path> - SETS THE CURRENT DIRECTORY TO THE");
     vga.println("                     SPECIFIED PATH");
     vga.println("readimgseq <absolute_path> - READS A BINARY IMAGE SEQUENCE");
+    vga.println("cls - CLEARS THE SCREEN");
 
     return 0;
 }
@@ -529,6 +530,13 @@ int cli_cmd_read_image_sequence(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
+int cli_cmd_cls(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    vga.clear();
+
+    return 0;
+}
+
 int cli_cmd_nop(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     // do nothing
@@ -685,6 +693,7 @@ void loop() {
         else if (serial_string.substring(0, 6).equals("hwinfo")) {cli_output(&cli_cmd_hwinfo, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("lsdev")) {cli_output(&cli_cmd_lsdev, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("net")) {cli_output(&cli_cmd_serial, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 3).equals("cls")) {cli_output(&cli_cmd_cls, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("df")) {cli_output(&cli_cmd_df, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("sd")) {cli_output(&cli_cmd_sd, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("ls")) {cli_output(&cli_cmd_ls, serial_string_char, vga);} 
