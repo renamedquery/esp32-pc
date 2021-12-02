@@ -50,7 +50,9 @@ uint64_t image_last_draw_time_ms = millis();
 
 uint64_t time_between_image_frame_draw_ms = 500;
 
-uint32_t last_image_frame;
+int last_image_frame = 0;
+
+bool kill_current_async_task = false;
 
 // its okay if this overflows, as long as we can %2 it then itll work
 int loop_index = 0;
@@ -503,7 +505,7 @@ int cli_cmd_read_image_sequence(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     String command_string = full_command;
 
-    const int end_of_first_command = 3;
+    const int end_of_first_command = 11;
 
     String directory = "";
 
@@ -688,7 +690,7 @@ void loop() {
         else if (serial_string.substring(0, 2).equals("cd")) {cli_output(&cli_cmd_cd, serial_string_char, vga);} 
         else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);}
         else if (serial_string.substring(0, 5).equals("touch")) {cli_output(&cli_cmd_touch, serial_string_char, vga);} 
-        else if (serial_string.substring(0, 11).equals("readimgseq")) {cli_output(&cli_cmd_read_image_sequence, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 10).equals("readimgseq")) {cli_output(&cli_cmd_read_image_sequence, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
@@ -696,18 +698,17 @@ void loop() {
         else {cli_nocmd();}
     }
 
-    if (!image_dir_in_queue.isEmpty() && (current_time_ms - image_last_draw_time_ms) > time_between_image_frame_draw_ms) {
+    if (!image_dir_in_queue.isEmpty() && (current_time_ms - image_last_draw_time_ms) > time_between_image_frame_draw_ms && !kill_current_async_task) {
 
         try {
 
-            String current_img = ((String)(last_image_frame));
+            String current_img = String(last_image_frame);
+            char current_img_char[10] = "";
+            current_img.toCharArray(current_img_char, 10);
 
-            for (int i = 0; i < 9 - current_img.length(); i++) {
+            sprintf(current_img_char, "%09d", last_image_frame);
 
-                current_img = "0" + current_img;
-            }
-
-            current_img += '.jpg.txt';
+            current_img = String(current_img_char) + ".jpg.txt";
 
             File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img);
 
@@ -715,11 +716,15 @@ void loop() {
 
             int image_width, image_height;
 
-            image_width = current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
-            image_height = current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
+            image_height = current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
+            image_width = current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
 
             int x = 0;
             int y = 0;
+
+            Image img;
+
+            unsigned char* img_pixels = new unsigned char[image_height * image_width];
 
             while (image_to_draw.available() > 0) {
 
@@ -727,14 +732,21 @@ void loop() {
 
                 String current_pix_value_str = image_to_draw.readStringUntil(';');
 
-                if (current_pix_value_str[0] == '\n') {
+                if (current_pix_value_str.indexOf("\n") != -1) {
 
                     y++;
-                    current_pix_value_str = current_pix_value_str[1];
+                    current_pix_value_str = current_pix_value_str[current_pix_value_str.indexOf("\n") + 1];
                 }
 
-                bool current_pix_value = (bool)(current_pix_value_str.toInt());
+                bool current_pix_val_1bit = (bool)(current_pix_value_str.toInt());
+
+                img_pixels[x + (y * image_width)] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
             }
+
+            img.init(image_width, image_height, img_pixels, img.R1G1B1A1);
+
+            vga.clear();
+            vga.imageAdd(img, 0, 0);
 
             image_to_draw.close();
 
