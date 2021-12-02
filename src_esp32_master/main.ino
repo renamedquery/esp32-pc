@@ -716,15 +716,15 @@ void loop() {
 
             int image_width, image_height;
 
-            image_height = current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
-            image_width = current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
+            // tempoary values just to test things out
+            // TODO: fix this
+            image_height = 80; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
+            image_width = 60; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
 
             int x = 0;
             int y = 0;
 
-            Image img;
-
-            unsigned char* img_pixels = new unsigned char[image_height * image_width];
+            vga.clear();
 
             while (image_to_draw.available() > 0) {
 
@@ -732,21 +732,19 @@ void loop() {
 
                 String current_pix_value_str = image_to_draw.readStringUntil(';');
 
-                if (current_pix_value_str.indexOf("\n") != -1) {
+                if (x >= image_width) {
 
                     y++;
-                    current_pix_value_str = current_pix_value_str[current_pix_value_str.indexOf("\n") + 1];
+                    x = 0;
                 }
 
                 bool current_pix_val_1bit = (bool)(current_pix_value_str.toInt());
 
-                img_pixels[x + (y * image_width)] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.setCursor(x * 3.5, y * 3.5);
+                vga.setTextColor(vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255), vga.RGB(0, 0, 0));
+                vga.print("M");
+                vga.show();
             }
-
-            img.init(image_width, image_height, img_pixels, img.R1G1B1A1);
-
-            vga.clear();
-            vga.imageAdd(img, 0, 0);
 
             image_to_draw.close();
 
