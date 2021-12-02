@@ -726,6 +726,9 @@ void loop() {
             image_height = 80; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
             image_width = 60; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
 
+            int x_aspect = SCREEN_WIDTH / image_width;
+            int y_aspect = SCREEN_HEIGHT / image_height;
+
             int x = 0;
             int y = 0;
 
@@ -746,17 +749,7 @@ void loop() {
 
                 bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
 
-                // zero out the pixels
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(0, 0, 0);
-
-                // make a 2x2 square
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.fillRect(x * x_aspect, y * y_aspect, x_aspect, y_aspect, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
             }
 
             image_to_draw.close();
