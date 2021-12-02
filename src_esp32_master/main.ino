@@ -698,7 +698,10 @@ void loop() {
         else {cli_nocmd();}
     }
 
-    if (!image_dir_in_queue.isEmpty() && (current_time_ms - image_last_draw_time_ms) > time_between_image_frame_draw_ms && !kill_current_async_task) {
+    // ignore last_draw_time_ms clock setting for now
+    if (!image_dir_in_queue.isEmpty() && !kill_current_async_task) {
+
+        image_last_draw_time_ms = current_time_ms;
 
         try {
 
@@ -714,9 +717,6 @@ void loop() {
 
             File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img);
 
-            // we will miss some data, but thats okay
-            image_to_draw.setTimeout(time_between_image_frame_draw_ms / 2);
-
             String current_img_res = image_to_draw.readStringUntil('\n');
 
             int image_width, image_height;
@@ -725,6 +725,10 @@ void loop() {
             // TODO: fix this
             image_height = 80; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
             image_width = 60; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
+
+            // for upscaling
+            int x_mult = SCREEN_WIDTH / image_width;
+            int y_mult = SCREEN_HEIGHT / image_height;
 
             int x = 0;
             int y = 0;
@@ -746,17 +750,7 @@ void loop() {
 
                 bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
 
-                // zero out the pixels
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(0, 0, 0);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(0, 0, 0);
-
-                // make a 2x2 square
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
-                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.fillRect((x * x_mult) + 0, (y * y_mult) + 0, x_mult, y_mult, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
             }
 
             image_to_draw.close();
@@ -769,7 +763,7 @@ void loop() {
             vga.clear();
         }
 
-        image_last_draw_time_ms = current_time_ms;
+        vga.show();
     }
 
     loop_index++;
