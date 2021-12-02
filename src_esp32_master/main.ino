@@ -786,17 +786,14 @@ void loop() {
 
             const int image_scale = 2;
 
-            image_width_rescaled /= image_scale;
-            image_height_rescaled /= image_scale;
-
             int x_aspect = SCREEN_WIDTH / image_width / image_scale;
             int y_aspect = SCREEN_HEIGHT / image_height / image_scale;
 
             int x = 0;
             int y = 0;
 
-            int anchor_x = (SCREEN_WIDTH / 2) - ((image_width_rescaled) / (2 * 1)) / 2;
-            int anchor_y = (SCREEN_HEIGHT / 2) - ((image_height_rescaled) / (2 * 1)) / 2;
+            int anchor_x = 0;
+            int anchor_y = 0;
 
             while (image_to_draw.available() > 0) {
 
