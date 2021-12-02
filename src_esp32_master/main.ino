@@ -48,7 +48,7 @@ String image_dir_in_queue = "";
 
 uint64_t image_last_draw_time_ms = millis();
 
-uint64_t time_between_image_frame_draw_ms = 500;
+uint64_t time_between_image_frame_draw_ms = 1000 / 4;
 
 int last_image_frame = 0;
 
@@ -608,7 +608,7 @@ void setup() {
     vga.init(vga.MODE640x350, PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
     vga.setFont(CodePage437_9x16);
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
-    vga.setFrameBufferCount(1);
+    vga.setFrameBufferCount(2);
 
     char pin_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
@@ -702,6 +702,8 @@ void loop() {
 
         try {
 
+            if (last_image_frame == 0) vga.clear();
+
             String current_img = String(last_image_frame);
             char current_img_char[10] = "";
             current_img.toCharArray(current_img_char, 10);
@@ -711,6 +713,9 @@ void loop() {
             current_img = String(current_img_char) + ".jpg.txt";
 
             File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img);
+
+            // we will miss some data, but thats okay
+            image_to_draw.setTimeout(time_between_image_frame_draw_ms / 2);
 
             String current_img_res = image_to_draw.readStringUntil('\n');
 
@@ -727,8 +732,6 @@ void loop() {
             int anchor_x = (SCREEN_WIDTH / 2) - (image_width / 2);
             int anchor_y = (SCREEN_HEIGHT / 2) - (image_height / 2);
 
-            vga.clear();
-
             while (image_to_draw.available() > 0) {
 
                 x++;
@@ -743,7 +746,17 @@ void loop() {
 
                 bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
 
-                if (current_pix_val_1bit) vga.frameBuffers[vga.currentFrameBuffer][y][x] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                // zero out the pixels
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(0, 0, 0);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(0, 0, 0);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(0, 0, 0);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(0, 0, 0);
+
+                // make a 2x2 square
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 0] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 0][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+                vga.frameBuffers[vga.currentFrameBuffer][(y * 2) + 1][(x * 2) + 1] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
             }
 
             image_to_draw.close();
@@ -753,6 +766,7 @@ void loop() {
         } catch (...) {
 
             image_dir_in_queue = "";
+            vga.clear();
         }
 
         image_last_draw_time_ms = current_time_ms;
