@@ -698,7 +698,9 @@ void loop() {
         else {cli_nocmd();}
     }
 
-    if (!image_dir_in_queue.isEmpty() && (current_time_ms - image_last_draw_time_ms) > time_between_image_frame_draw_ms && !kill_current_async_task) {
+    if (!image_dir_in_queue.isEmpty() && !kill_current_async_task) {
+
+        image_last_draw_time_ms = current_time_ms;
 
         try {
 
@@ -765,8 +767,6 @@ void loop() {
 
             image_dir_in_queue = "";
         }
-
-        image_last_draw_time_ms = current_time_ms;
     }
 
     loop_index++;
