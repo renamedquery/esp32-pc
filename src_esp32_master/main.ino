@@ -597,6 +597,7 @@ void setup() {
 
     spi = new SPIClass(VSPI);
     spi->begin(SD_SCLK, SD_MISO, SD_MOSI, SD_SS);
+    spi->setFrequency((uint32_t)(get_clock_speed_cpu_mhz()) * 1000 * 1000); // might be unstable at 240Mhz?
 
     WiFi.mode(WIFI_AP);
     bool softap_start_status = WiFi.softAP(WIFI_NAME, WIFI_PASSWORD, 1, 0, AP_MAX_CONNECTIONS);
