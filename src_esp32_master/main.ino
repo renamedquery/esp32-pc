@@ -724,6 +724,9 @@ void loop() {
             int x = 0;
             int y = 0;
 
+            int anchor_x = (SCREEN_WIDTH / 2) - (image_width / 2);
+            int anchor_y = (SCREEN_HEIGHT / 2) - (image_height / 2);
+
             vga.clear();
 
             while (image_to_draw.available() > 0) {
@@ -738,11 +741,9 @@ void loop() {
                     x = 0;
                 }
 
-                bool current_pix_val_1bit = (bool)(current_pix_value_str.toInt());
+                bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
 
-                vga.setCursor(x * 3.5, y * 3.5);
-                vga.setTextColor(vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255), vga.RGB(0, 0, 0));
-                vga.print("M");
+                if (current_pix_val_1bit) vga.dotFast(anchor_x + x, anchor_y + y, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
                 vga.show();
             }
 
