@@ -153,7 +153,7 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(16);
+    scroll_terminal(17);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
@@ -170,6 +170,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("                     SPECIFIED PATH");
     vga.println("readimgseq <absolute_path> - READS A BINARY IMAGE SEQUENCE");
     vga.println("cls - CLEARS THE SCREEN");
+    vga.println("screenshot <absolute_path> - WRITES A SCREENSHOT TO THE PATH");
 
     return 0;
 }
@@ -530,6 +531,52 @@ int cli_cmd_read_image_sequence(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
+int cli_cmd_screenshot(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    String command_string = full_command;
+
+    const int end_of_first_command = 11;
+
+    String filename = "";
+
+    for (int i = end_of_first_command; i < MAX_CLI_INPUT_LENGTH; i++) {
+
+        if (command_string.substring(i, i + 1).isEmpty()) {
+
+            break;
+
+        } else {
+
+            filename += command_string.substring(i, i + 1);
+        }
+    }
+
+    try {
+
+        File output_file = SD.open(filename, "w");
+
+        output_file.print(SCREEN_WIDTH); output_file.print(";"); output_file.print(SCREEN_HEIGHT); output_file.print('\n');
+
+        for (int y = 0; y < SCREEN_HEIGHT; y++) {
+
+            for (int x = 0; x < SCREEN_WIDTH; x++) {
+
+                output_file.print(vga.frameBuffers[vga.currentFrameBuffer][y][x]); output_file.print(";");
+            }
+
+            output_file.print('\n');
+        }
+
+        output_file.close();
+
+    } catch (...) {
+
+        return 1;
+    }
+
+    return 0;
+}
+
 int cli_cmd_cls(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     vga.clear();
@@ -701,6 +748,7 @@ void loop() {
         else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);}
         else if (serial_string.substring(0, 5).equals("touch")) {cli_output(&cli_cmd_touch, serial_string_char, vga);} 
         else if (serial_string.substring(0, 10).equals("readimgseq")) {cli_output(&cli_cmd_read_image_sequence, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 10).equals("screenshot")) {cli_output(&cli_cmd_screenshot, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
