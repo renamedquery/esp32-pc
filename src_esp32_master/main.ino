@@ -7,6 +7,7 @@
 #include <esp_wifi.h>
 #include <SD.h>
 #include <SPI.h>
+#include <vector>
 
 #define MAX_CLI_INPUT_LENGTH 64
 #define MAX_CLI_OUTPUT_LENGTH 128
@@ -42,6 +43,14 @@ VGA3BitI vga;
 SPIClass *spi = NULL;
 
 String current_sd_path = "/";
+
+String image_dir_in_queue = "";
+
+uint64_t image_last_draw_time_ms = millis();
+
+uint64_t time_between_image_frame_draw_ms = 500;
+
+uint32_t last_image_frame;
 
 // its okay if this overflows, as long as we can %2 it then itll work
 int loop_index = 0;
@@ -142,7 +151,7 @@ int cli_cmd_hwinfo(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
 int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
-    scroll_terminal(14);
+    scroll_terminal(15);
     vga.println("fbmem - PRINTS THE AMOUNT OF MEMORY USED BY THE FRAMEBUFFER");
     vga.println("fbinfo - PRINTS THE INFORMATION ABOUT THE FRAMEBUFFERS");
     vga.println("         RESOLUTION AND BIT DEPTH");
@@ -157,6 +166,7 @@ int cli_cmd_help(char full_command[MAX_CLI_INPUT_LENGTH]) {
     vga.println("touch <absolute_path> - CREATES A FILE IN THE CURRENT DIRECTORY");
     vga.println("cd <absolute_path> - SETS THE CURRENT DIRECTORY TO THE");
     vga.println("                     SPECIFIED PATH");
+    vga.println("readimgseq <absolute_path> - READS A BINARY IMAGE SEQUENCE");
 
     return 0;
 }
@@ -489,6 +499,34 @@ int cli_cmd_sd(char full_command[MAX_CLI_INPUT_LENGTH]) {
     return 0;
 }
 
+int cli_cmd_read_image_sequence(char full_command[MAX_CLI_INPUT_LENGTH]) {
+
+    String command_string = full_command;
+
+    const int end_of_first_command = 3;
+
+    String directory = "";
+
+    for (int i = end_of_first_command; i < MAX_CLI_INPUT_LENGTH; i++) {
+
+        if (command_string[i] == ' ') {
+
+            break;
+
+        } else {
+
+            directory += command_string.substring(i, i + 1);
+        }
+    }
+
+    // this command uses the assumption that you are using a filename that is xxxxxxxxx.jpg.txt
+    // it will NOT work otherwise!
+    image_dir_in_queue = directory;
+    last_image_frame = 0;
+
+    return 0;
+}
+
 int cli_cmd_nop(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
     // do nothing
@@ -624,6 +662,8 @@ void setup() {
 
 void loop() {
 
+    uint64_t current_time_ms = millis();
+
     while (Serial.available()) {
 
         String serial_string = Serial.readString();
@@ -646,13 +686,66 @@ void loop() {
         else if (serial_string.substring(0, 2).equals("sd")) {cli_output(&cli_cmd_sd, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("ls")) {cli_output(&cli_cmd_ls, serial_string_char, vga);} 
         else if (serial_string.substring(0, 2).equals("cd")) {cli_output(&cli_cmd_cd, serial_string_char, vga);} 
-        else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 5).equals("mkdir")) {cli_output(&cli_cmd_mkdir, serial_string_char, vga);}
         else if (serial_string.substring(0, 5).equals("touch")) {cli_output(&cli_cmd_touch, serial_string_char, vga);} 
+        else if (serial_string.substring(0, 11).equals("readimgseq")) {cli_output(&cli_cmd_read_image_sequence, serial_string_char, vga);} 
         else if (serial_string.substring(0, 4).equals("help")) {cli_output(&cli_cmd_help, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("nop")) {cli_output(&cli_cmd_nop, serial_string_char, vga);} 
         else if (serial_string.substring(0, 3).equals("err")) {cli_output(&cli_cmd_err, serial_string_char, vga);} 
         else if (serial_string.substring(0, 6).equals("reboot")) {reset();} 
         else {cli_nocmd();}
+    }
+
+    if (!image_dir_in_queue.isEmpty() && (current_time_ms - image_last_draw_time_ms) > time_between_image_frame_draw_ms) {
+
+        try {
+
+            String current_img = ((String)(last_image_frame));
+
+            for (int i = 0; i < 9 - current_img.length(); i++) {
+
+                current_img = "0" + current_img;
+            }
+
+            current_img += '.jpg.txt';
+
+            File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img);
+
+            String current_img_res = image_to_draw.readStringUntil('\n');
+
+            int image_width, image_height;
+
+            image_width = current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
+            image_height = current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
+
+            int x = 0;
+            int y = 0;
+
+            while (image_to_draw.available() > 0) {
+
+                x++;
+
+                String current_pix_value_str = image_to_draw.readStringUntil(';');
+
+                if (current_pix_value_str[0] == '\n') {
+
+                    y++;
+                    current_pix_value_str = current_pix_value_str[1];
+                }
+
+                bool current_pix_value = (bool)(current_pix_value_str.toInt());
+            }
+
+            image_to_draw.close();
+
+            last_image_frame++;
+
+        } catch (...) {
+
+            image_dir_in_queue = "";
+        }
+
+        image_last_draw_time_ms = current_time_ms;
     }
 
     loop_index++;
