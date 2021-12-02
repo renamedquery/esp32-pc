@@ -12,7 +12,9 @@ for file in FILES_IN_DIR:
 
     image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
 
-    output_string = "{};{}\n".format(image.shape[1], image.shape[0])
+    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.txt', 'wb')
+
+    eol = 2
 
     for y in range(image.shape[0]):
 
@@ -25,10 +27,8 @@ for file in FILES_IN_DIR:
             else:
                 val = 0
 
-            output_string += "{};".format(val)
+            output.write(val.to_bytes(1, 'big'))
         
-        output_string += '\n'
+        output.write(eol.to_bytes(1, 'big'))
     
-    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.txt', 'w')
-    output.write(output_string)
     output.close()
