@@ -809,7 +809,9 @@ void loop() {
 
                 bool current_pix_val_1bit = !((bool)(current_pix_value_str));
 
-                vga.fillRect((x * x_aspect) + anchor_x, (y * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
+                unsigned char pix_clr = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
+
+                if (vga.frameBuffers[vga.currentFrameBuffer][y][x] != pix_clr) vga.fillRect((x * x_aspect) + anchor_x, (y * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), pix_clr);
             }
 
             image_to_draw.close();
