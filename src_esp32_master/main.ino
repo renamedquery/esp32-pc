@@ -743,8 +743,7 @@ void loop() {
 
                 bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
 
-                if (current_pix_val_1bit) vga.dotFast(anchor_x + x, anchor_y + y, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
-                vga.show();
+                if (current_pix_val_1bit) vga.frameBuffers[vga.currentFrameBuffer][y][x] = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
             }
 
             image_to_draw.close();
