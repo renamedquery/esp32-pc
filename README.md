@@ -8,7 +8,7 @@
 
 https://user-images.githubusercontent.com/38505228/144457540-95d6329d-72f4-4b86-819c-0e0052e4b696.mp4
 
-*Yes, it does run Bad Apple!*
+*Yes, it does run Bad Apple! (Make sure to run `net stop` before using `readimgseq`)*
 
 ![](https://user-images.githubusercontent.com/38505228/144286600-0376f26c-2630-45b0-bb09-f7fb35e8bbb3.jpg)
 
