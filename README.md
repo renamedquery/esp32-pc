@@ -6,9 +6,9 @@
 
 *Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem (the `DF` command I wrote is still in it's early stages, so it reads the wrong values).*
 
-https://user-images.githubusercontent.com/38505228/144451346-8fbe699e-efb0-4b56-8669-97388c6765cc.mp4
+https://user-images.githubusercontent.com/38505228/144457540-95d6329d-72f4-4b86-819c-0e0052e4b696.mp4
 
-*I was able to hastily hack together a really glitchy bad apple demo. I will work more on this later.*
+*Yes, it does run Bad Apple!*
 
 ![](https://user-images.githubusercontent.com/38505228/144286600-0376f26c-2630-45b0-bb09-f7fb35e8bbb3.jpg)
 
