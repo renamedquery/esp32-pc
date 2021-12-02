@@ -17,16 +17,14 @@ for y in range(image_size[1]):
 
     row = image_file_contents.split('\n')[y + 1].split(';')
 
-    for x in range(image_size[0]):
+    for x in range(0, image_size[0] // 2):
 
-        pix_val_byte = row[x]
+        r = int(row[x])
+        g = int(row[x])
+        b = int(row[x])
 
-        # decode the bytes to get the actual non bw value
-        r = pix_val_byte
-        b = pix_val_byte
-        g = pix_val_byte
-
-        output_image[y][x] = [r, g, b]
+        output_image[y][(x * 2) + 0] = [r, g, b]
+        output_image[y][(x * 2) + 1] = [r, g, b]
 
 image_file.close()
 
