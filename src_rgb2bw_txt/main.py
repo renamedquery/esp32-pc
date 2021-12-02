@@ -12,7 +12,7 @@ for file in FILES_IN_DIR:
 
     image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
 
-    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.txt', 'wb')
+    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.esp32binimg', 'wb')
 
     eol = 2
 
