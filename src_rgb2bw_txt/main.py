@@ -10,7 +10,7 @@ for file in FILES_IN_DIR:
 
     image = cv2.imread(IMAGE_DIR_PATH + '/' + file, cv2.IMREAD_GRAYSCALE)
 
-    image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
+    image = cv2.resize(image, [image.shape[0] // 3, image.shape[1] // 3])
 
     output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.esp32binimg', 'wb')
 

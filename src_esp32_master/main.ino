@@ -724,8 +724,8 @@ void loop() {
             // tempoary values just to test things out
             // TODO: fix this
             // TODO: make images binary files instead of text
-            image_height = 80; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
-            image_width = 60; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
+            image_height = 80 * 2; //current_img_res.substring(0, current_img_res.indexOf(";")).toInt();
+            image_width = 60 * 2; //current_img_res.substring(current_img_res.indexOf(";"), current_img_res.length()).toInt();
 
             int x_aspect = SCREEN_WIDTH / image_width;
             int y_aspect = SCREEN_HEIGHT / image_height;
