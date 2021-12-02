@@ -6,7 +6,7 @@ FILES_IN_DIR = os.listdir(IMAGE_DIR_PATH)
 
 for file in FILES_IN_DIR:
 
-    print(file)
+    print(IMAGE_DIR_PATH + '/' + file)
 
     image = cv2.imread(IMAGE_DIR_PATH + '/' + file, cv2.IMREAD_GRAYSCALE)
 
@@ -24,7 +24,9 @@ for file in FILES_IN_DIR:
                 val = 0
 
             output_string += "{};".format(val)
+        
+        output_string += '\n'
     
     output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.txt', 'w')
-    output.write(output_string + '\n')
+    output.write(output_string)
     output.close()
