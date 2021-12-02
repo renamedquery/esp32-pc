@@ -710,14 +710,14 @@ void loop() {
 
             sprintf(current_img_char, "%09d", last_image_frame);
 
-            current_img = String(current_img_char) + ".jpg.txt";
+            current_img = String(current_img_char) + ".jpg.esp32binimg";
 
-            File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img);
+            File image_to_draw = SD.open(image_dir_in_queue + '/' + current_img, "rb");
 
             // we will miss some data, but thats okay
             image_to_draw.setTimeout(time_between_image_frame_draw_ms / 2);
 
-            String current_img_res = image_to_draw.readStringUntil('\n');
+            //String current_img_res = image_to_draw.readStringUntil('\n');
 
             int image_width, image_height;
 
@@ -740,17 +740,17 @@ void loop() {
 
                 x++;
 
-                String current_pix_value_str = image_to_draw.readStringUntil(';');
+                byte current_pix_value_str = image_to_draw.read();
 
-                if (x >= image_width) {
+                if (x >= image_width || current_pix_value_str == 2) {
 
                     y++;
                     x = 0;
                 }
 
-                bool current_pix_val_1bit = !(bool)(current_pix_value_str.toInt());
+                bool current_pix_val_1bit = !((bool)(current_pix_value_str));
 
-                vga.fillRect(x * x_aspect, y * y_aspect, x_aspect, y_aspect, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
+                vga.fillRect(x * x_aspect, y * y_aspect, x_aspect, y_aspect * 2, vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255));
             }
 
             image_to_draw.close();
