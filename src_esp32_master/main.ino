@@ -705,8 +705,6 @@ void loop() {
 
         try {
 
-            if (last_image_frame == 0) vga.clear();
-
             String current_img = String(last_image_frame);
             char current_img_char[10] = "";
             current_img.toCharArray(current_img_char, 10);
@@ -760,7 +758,6 @@ void loop() {
         } catch (...) {
 
             image_dir_in_queue = "";
-            vga.clear();
         }
 
         vga.show();
