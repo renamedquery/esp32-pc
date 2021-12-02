@@ -6,9 +6,9 @@
 
 *Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem (the `DF` command I wrote is still in it's early stages, so it reads the wrong values).*
 
-https://user-images.githubusercontent.com/38505228/144353771-c9063c1c-81b0-46ec-8dd4-53735dbf388a.mp4
+https://user-images.githubusercontent.com/38505228/144451346-8fbe699e-efb0-4b56-8669-97388c6765cc.mp4
 
-*I was able to hastily hack together a really glitchy bad apple demo. I will work more on this later (if I draw the image directly to the framebuffer instead of blitting pixels, it should be much faster).*
+*I was able to hastily hack together a really glitchy bad apple demo. I will work more on this later.*
 
 ![](https://user-images.githubusercontent.com/38505228/144286600-0376f26c-2630-45b0-bb09-f7fb35e8bbb3.jpg)
 
