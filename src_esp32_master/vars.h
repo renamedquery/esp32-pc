@@ -47,7 +47,7 @@ uint64_t time_between_image_frame_draw_ms = 1000 / 4;
 
 int last_image_frame = 0;
 
-int frames_per_frame_file = 4;
+int frames_per_frame_file = 16;
 
 bool kill_current_async_task = false;
 
