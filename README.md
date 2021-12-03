@@ -6,7 +6,7 @@
 
 *Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem (the `DF` command I wrote is still in it's early stages, so it reads the wrong values).*
 
-https://user-images.githubusercontent.com/38505228/144481637-9e02bbfd-05f4-480c-bce3-f2e724dd04d9.mp4
+https://user-images.githubusercontent.com/38505228/144533888-a554f9e2-1798-46a8-8973-4e52e9139382.mp4
 
 *Yes, it does run Bad Apple! (Make sure to run `net stop` before using `readimgseq`)*
 
