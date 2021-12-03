@@ -21,7 +21,7 @@ for file_i in range(len(FILES_IN_DIR) // FRAMES_PER_FRAME_FILE):
 
         image = cv2.imread(IMAGE_DIR_PATH + '/' + file, cv2.IMREAD_GRAYSCALE)
 
-        image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
+        image = cv2.resize(image, [image.shape[0] // 3, image.shape[1] // 3])
 
         eol = 2
 
