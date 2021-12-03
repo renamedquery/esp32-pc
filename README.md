@@ -32,6 +32,25 @@ https://user-images.githubusercontent.com/38505228/144641138-c76b6ec1-a7fe-420b-
 - 6x ESP32-S2 Dev Kit
 - 1x Digital PmodSD
 
+### Commands:
+
+- fbmem
+- fbinfo
+- hwinfo
+- lsdev
+- net <cmd>
+- df
+- sd <cmd>
+- mkdir <absolute_path>
+- ls
+- touch <absolute_path>
+- cd <absolute_path>
+- readimgseq <absolute_path>
+- cls
+- screenshot <absolute_path>
+
+*Use the `help` command to list all of the commands and their usage. You can comment out text by writing `nop <string>`.*
+
 ### Why am I doing this?
 
 I have quite a bit of experience programming on high end desktop computers, and thought that it would be useful to learn how to program on a system with much tighter tolerances and lower specs.
