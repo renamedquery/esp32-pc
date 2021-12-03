@@ -3,7 +3,7 @@ import cv2, os, sys
 IMAGE_DIR_PATH = sys.argv[-2]
 IMAGE_OUTPUT_DIR_PATH = sys.argv[-1]
 FILES_IN_DIR = os.listdir(IMAGE_DIR_PATH)
-FRAMES_PER_FRAME_FILE = 4
+FRAMES_PER_FRAME_FILE = 16
 
 for file_i in range(len(FILES_IN_DIR) // FRAMES_PER_FRAME_FILE):
 
