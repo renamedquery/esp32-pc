@@ -38,9 +38,9 @@ https://user-images.githubusercontent.com/38505228/144641138-c76b6ec1-a7fe-420b-
 - fbinfo
 - hwinfo
 - lsdev
-- net <command>
+- net <command_args>
 - df
-- sd <command>
+- sd <command_args>
 - mkdir <absolute_path>
 - ls
 - touch <absolute_path>
