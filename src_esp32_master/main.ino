@@ -665,6 +665,7 @@ void setup() {
     vga.setFont(CodePage437_9x16);
     vga.setTextColor(vga.RGB(255, 255, 255), vga.RGB(0, 0, 0));
     vga.setFrameBufferCount(2);
+    vga.clear();
 
     char pin_info[MAX_CLI_OUTPUT_LENGTH_PER_LINE] = "";
     sprintf(pin_info, "PIN_R=%d\nPIN_G=%d\nPIN_B=%d\nPIN_HSYNC=%d\nPIN_VSYNC=%d", PIN_R, PIN_G, PIN_B, PIN_HSYNC, PIN_VSYNC);
