@@ -52,6 +52,8 @@ uint64_t time_between_image_frame_draw_ms = 1000 / 4;
 
 int last_image_frame = 0;
 
+int frames_per_frame_file = 4;
+
 bool kill_current_async_task = false;
 
 uint64_t loop_index = 0;
@@ -795,6 +797,8 @@ void loop() {
             int anchor_x = 0;
             int anchor_y = 0;
 
+            int current_embedded_frame = 0;
+
             while (image_to_draw.available() > 0) {
 
                 byte current_pix_value_str = image_to_draw.read();
@@ -810,6 +814,13 @@ void loop() {
 
                         y++;
                         x = 0;
+                    }
+
+                    if (y >= image_height) {
+
+                        y = 0;
+                        x = 0;
+                        current_embedded_frame++;
                     }
 
                     if (vga.frameBuffers[vga.currentFrameBuffer][y][x] != pix_clr) vga.fillRect(((x) * x_aspect) + anchor_x, ((y * 2) * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), pix_clr);

@@ -3,51 +3,60 @@ import cv2, os, sys
 IMAGE_DIR_PATH = sys.argv[-2]
 IMAGE_OUTPUT_DIR_PATH = sys.argv[-1]
 FILES_IN_DIR = os.listdir(IMAGE_DIR_PATH)
+FRAMES_PER_FRAME_FILE = 4
 
-for file in FILES_IN_DIR:
+for file_i in range(len(FILES_IN_DIR) // FRAMES_PER_FRAME_FILE):
 
-    print(IMAGE_DIR_PATH + '/' + file)
+    file_i_name = ("0" * ((9 - 0) - len(str(file_i)))) + str(file_i)
 
-    image = cv2.imread(IMAGE_DIR_PATH + '/' + file, cv2.IMREAD_GRAYSCALE)
+    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file_i_name + '.jpg.esp32binimg', 'wb')
 
-    image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
+    file = FILES_IN_DIR[file_i]
 
-    output = open(IMAGE_OUTPUT_DIR_PATH + '/' + file + '.esp32binimg', 'wb')
+    for file_j in range(FRAMES_PER_FRAME_FILE):
 
-    eol = 2
+        file = FILES_IN_DIR[(file_i * FRAMES_PER_FRAME_FILE) + file_j]
 
-    for y in range(image.shape[0]):
+        print(IMAGE_DIR_PATH + '/' + file)
 
-        lastval = -1
-        lastval_count = 0
-        lastval_written = 0
+        image = cv2.imread(IMAGE_DIR_PATH + '/' + file, cv2.IMREAD_GRAYSCALE)
 
-        for x in range(image.shape[1]):
+        image = cv2.resize(image, [image.shape[0] // 6, image.shape[1] // 6])
 
-            val = (image[y][x] / 255)
+        eol = 2
 
-            if (val > .5):
-                val = 1
-            else:
-                val = 0
+        for y in range(image.shape[0]):
 
-            if (x == 0):
+            lastval = -1
+            lastval_count = 0
+            lastval_written = 0
+
+            for x in range(image.shape[1]):
+
+                val = (image[y][x] / 255)
+
+                if (val > .5):
+                    val = 1
+                else:
+                    val = 0
+
+                if (x == 0):
+                    lastval = val
+                
+                if (val == lastval):
+                    lastval_count += 1
+                    lastval_written = 0
+                else:
+                    output.write(lastval.to_bytes(1, 'big'))
+                    output.write(lastval_count.to_bytes(1, 'big'))
+                    lastval_count = 0
+                    lastval_written = 1
+                
                 lastval = val
             
-            if (val == lastval):
-                lastval_count += 1
-                lastval_written = 0
-            else:
+            if (lastval_written == 0):
+
                 output.write(lastval.to_bytes(1, 'big'))
                 output.write(lastval_count.to_bytes(1, 'big'))
-                lastval_count = 0
-                lastval_written = 1
-            
-            lastval = val
-        
-        if (lastval_written == 0):
-
-            output.write(lastval.to_bytes(1, 'big'))
-            output.write(lastval_count.to_bytes(1, 'big'))
             
     output.close()
