@@ -54,8 +54,7 @@ int last_image_frame = 0;
 
 bool kill_current_async_task = false;
 
-// its okay if this overflows, as long as we can %2 it then itll work
-int loop_index = 0;
+uint64_t loop_index = 0;
 
 typedef int (*cli_function)(char[MAX_CLI_INPUT_LENGTH]);
 
