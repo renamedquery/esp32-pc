@@ -1,6 +1,6 @@
 #define CONFIG_IDF_TARGET_ESP32 1
 
-#include "cli.h"
+#include "cli.hpp"
 
 void setup() {
 

@@ -1,7 +1,7 @@
 #include <esp_wifi.h>
 #include <soc/rtc.h>
 
-#include "vars.h"
+#include "vars.hpp"
 
 void scroll_terminal(int lines) {
 
