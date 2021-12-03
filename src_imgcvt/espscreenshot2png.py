@@ -11,30 +11,20 @@ image_size = image_file_contents.split('\n')[0].split(';')
 image_size[0] = int(image_size[0])
 image_size[1] = int(image_size[1])
 
-output_image = numpy.zeros((image_size[1], image_size[0], 1), dtype = numpy.uint8)
+output_image = numpy.zeros((image_size[1], image_size[0], 3), dtype = numpy.uint8)
 
-output_image_pixdata = image_file_contents.split('\n')[1].split(';')
+for y in range(image_size[1]):
 
-x, y = 0, 0
+    row = image_file_contents.split('\n')[y + 1].split(';')
 
-for pair in range(len(output_image_pixdata) // 2 // 2):
+    for x in range(0, image_size[0] // 2):
 
-    pix_value = int(output_image_pixdata[(pair * 2) + 0])
-    pix_run_length = int(output_image_pixdata[(pair * 2) + 1])
+        r = int(row[x])
+        g = int(row[x])
+        b = int(row[x])
 
-    for pix_run in range(pix_run_length):
-
-        if ((x) >= (image_size[0] / 2)):
-
-            x = 0
-            y += 1
-
-        output_image[y][(x * 2) + 0] = pix_value
-        output_image[y][(x * 2) + 1] = pix_value
-
-        x += 1
-    
-    x += 1
+        output_image[y][(x * 2) + 0] = [r, g, b]
+        output_image[y][(x * 2) + 1] = [r, g, b]
 
 image_file.close()
 

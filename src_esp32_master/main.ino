@@ -557,27 +557,14 @@ int cli_cmd_screenshot(char full_command[MAX_CLI_INPUT_LENGTH]) {
 
         output_file.print(SCREEN_WIDTH); output_file.print(";"); output_file.print(SCREEN_HEIGHT); output_file.print('\n');
 
-        unsigned char last_value = -1;
-        uint16_t last_value_run_length = 0;
-
         for (int y = 0; y < SCREEN_HEIGHT; y++) {
 
             for (int x = 0; x < SCREEN_WIDTH; x++) {
 
-                unsigned char current_value = vga.frameBuffers[vga.currentFrameBuffer][y][x];
-
-                if (current_value == last_value) {
-                    
-                    last_value_run_length++;
-                
-                } else {
-
-                    output_file.print(current_value); output_file.print(";"); output_file.print(last_value_run_length); output_file.print(";");
-
-                    last_value = current_value;
-                    last_value_run_length = 0;
-                }
+                output_file.print(vga.frameBuffers[vga.currentFrameBuffer][y][x]); output_file.print(";");
             }
+
+            output_file.print('\n');
         }
 
         output_file.close();
