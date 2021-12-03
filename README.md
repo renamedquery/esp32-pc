@@ -10,10 +10,6 @@ https://user-images.githubusercontent.com/38505228/144481637-9e02bbfd-05f4-480c-
 
 *Yes, it does run Bad Apple! (Make sure to run `net stop` before using `readimgseq`)*
 
-![](https://user-images.githubusercontent.com/38505228/144529263-3d79517f-b579-4a97-bd00-8b308f0ea439.png)
-
-*One of the latest updates included the ability to take screenshots. The screenshot algorithm will be improved later to use run length encoding, which should speed it up significantly.*
-
 ![](https://user-images.githubusercontent.com/38505228/144286600-0376f26c-2630-45b0-bb09-f7fb35e8bbb3.jpg)
 
 *I call it, "The Signal Integrity House of Horrors".*
