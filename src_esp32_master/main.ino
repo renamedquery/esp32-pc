@@ -797,21 +797,27 @@ void loop() {
 
             while (image_to_draw.available() > 0) {
 
-                x++;
-
                 byte current_pix_value_str = image_to_draw.read();
-
-                if (x >= image_width || current_pix_value_str == 2) {
-
-                    y++;
-                    x = 0;
-                }
+                byte current_pix_run_length = image_to_draw.read();
 
                 bool current_pix_val_1bit = !((bool)(current_pix_value_str));
 
                 unsigned char pix_clr = vga.RGB(current_pix_val_1bit * 255, current_pix_val_1bit * 255, current_pix_val_1bit * 255);
 
-                if (vga.frameBuffers[vga.currentFrameBuffer][y][x] != pix_clr) vga.fillRect((x * x_aspect) + anchor_x, (y * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), pix_clr);
+                for (int i = 0; i < current_pix_run_length; i++) {
+
+                    if (x >= image_width) {
+
+                        y++;
+                        x = 0;
+                    }
+
+                    if (vga.frameBuffers[vga.currentFrameBuffer][y][x] != pix_clr) vga.fillRect(((x) * x_aspect) + anchor_x, ((y * 2) * y_aspect) + anchor_y, x_aspect, (y_aspect * 2), pix_clr);
+
+                    x++;
+                }
+
+                x++;
             }
 
             image_to_draw.close();

@@ -18,6 +18,10 @@ for file in FILES_IN_DIR:
 
     for y in range(image.shape[0]):
 
+        lastval = -1
+        lastval_count = 0
+        lastval_written = 0
+
         for x in range(image.shape[1]):
 
             val = (image[y][x] / 255)
@@ -27,8 +31,23 @@ for file in FILES_IN_DIR:
             else:
                 val = 0
 
-            output.write(val.to_bytes(1, 'big'))
+            if (x == 0):
+                lastval = val
+            
+            if (val == lastval):
+                lastval_count += 1
+                lastval_written = 0
+            else:
+                output.write(lastval.to_bytes(1, 'big'))
+                output.write(lastval_count.to_bytes(1, 'big'))
+                lastval_count = 0
+                lastval_written = 1
+            
+            lastval = val
         
-        output.write(eol.to_bytes(1, 'big'))
-    
+        if (lastval_written == 0):
+
+            output.write(lastval.to_bytes(1, 'big'))
+            output.write(lastval_count.to_bytes(1, 'big'))
+            
     output.close()
