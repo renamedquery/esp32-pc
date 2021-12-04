@@ -8,7 +8,7 @@ https://user-images.githubusercontent.com/38505228/144671347-8b8e3e65-b26e-4b90-
 
 ![](https://user-images.githubusercontent.com/38505228/144322399-b0548359-7660-4e32-ba5e-7d7e87ef826c.jpg)
 
-*Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem (the `DF` command I wrote is still in it's early stages, so it reads the wrong values).*
+*Currently, the master device will now allow up to 8 slave devices to sync to it over WiFi. It can also read from an SD card filesystem.*
 
 ![](https://user-images.githubusercontent.com/38505228/144529263-3d79517f-b579-4a97-bd00-8b308f0ea439.png)
 
