@@ -27,7 +27,7 @@ for file_i in range(len(FILES_IN_DIR) // FRAMES_PER_FRAME_FILE):
 
         for y in range(image.shape[0]):
 
-            lastval = -1
+            lastval = None
             lastval_count = 0
             lastval_written = 0
 
